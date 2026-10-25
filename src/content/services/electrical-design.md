@@ -7,7 +7,6 @@ group: projects
 order: 9
 summary: Layouts, circuit design and coordination for architects, developers and clients.
 audience: Architects, developers, interior designers and clients
-drawing: design
 schedule:
   - { label: Outputs, value: "Power and lighting layouts, circuit schedules, distribution design" }
   - { label: Considers, value: "Maximum demand, supply capacity, protection, cable sizing, future loads" }

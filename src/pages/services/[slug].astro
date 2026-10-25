@@ -1,9 +1,7 @@
 ---
 import { getCollection, getEntries, render } from 'astro:content';
-import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import PageHeader from '../../components/PageHeader.astro';
-import Drawing from '../../components/Drawing.astro';
 import Faqs from '../../components/Faqs.astro';
 import CtaBand from '../../components/CtaBand.astro';
 import { href, absolute } from '../../lib/site';
@@ -20,8 +18,6 @@ const { Content } = await render(service);
 const related = await getEntries(d.related);
 const locations = (await getEntries(d.locations)).sort((a, b) => a.data.order - b.data.order);
 const advice = await getEntries(d.advice);
-const photos = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*.{jpg,jpeg,png,webp,avif}');
-const img = d.image && photos[`/src/assets/${d.image}`] ? (await photos[`/src/assets/${d.image}`]()).default : null;
 
 const path = `/services/${service.id}/`;
 const crumbs = [{ label: 'Services', path: '/services/' }, { label: d.navTitle, path }];
@@ -43,9 +39,6 @@ const schema = [
 ---
 <Base title={d.seoTitle} description={d.description} schema={schema}>
   <PageHeader eyebrow={d.group === 'domestic' ? 'Services · For homes' : 'Services · Projects and commercial'} title={d.title} lead={d.summary} crumbs={crumbs}>
-    <div class="svc-visual">
-      {img ? <Image src={img} alt={d.imageAlt ?? ''} widths={[480, 800, 1200]} sizes="(max-width: 960px) 100vw, 40vw" /> : <Drawing kind={d.drawing} />}
-    </div>
     <div slot="actions" class="ph-actions">
       <a class="btn" href={href(`/contact/?type=${enquiry}&service=${service.id}`)} data-track="cta_click" data-cta="service_header">Ask about {d.navTitle.toLowerCase()} <span class="arrow" aria-hidden="true"></span></a>
     </div>
@@ -123,30 +116,28 @@ const schema = [
 </Base>
 
 <style>
-  .svc-visual { aspect-ratio: 4 / 3; overflow: hidden; }
-  .svc-visual :global(img), .svc-visual :global(.drawing) { width: 100%; height: 100%; object-fit: cover; }
   .svc-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 48px clamp(40px, 7vw, 112px); align-items: start; }
   .svc-body { font-size: 1.0625rem; }
   .svc-body > :global(p:first-child) { font-size: 1.25rem; line-height: 1.55; }
   .svc-aside { position: sticky; top: calc(var(--header-h) + 24px); display: grid; gap: 20px; }
-  .aside-label { color: var(--copper-ink); text-transform: uppercase; letter-spacing: .12em; font-size: .6875rem; margin-bottom: 12px; }
+  .aside-label { color: var(--brass-ink); text-transform: uppercase; letter-spacing: .12em; font-size: .6875rem; margin-bottom: 12px; }
   .aside-cta { padding: 24px; display: grid; gap: 10px; }
-  .aside-cta .mono { color: var(--copper); font-size: .6875rem; text-transform: uppercase; letter-spacing: .12em; }
+  .aside-cta .mono { color: var(--brass); font-size: .6875rem; text-transform: uppercase; letter-spacing: .12em; }
   .aside-cta-title { font-family: var(--serif); font-size: 1.75rem; line-height: 1.1; margin-bottom: 8px; }
-  .aside-cta .btn { --btn-bg: var(--copper); --btn-fg: var(--charcoal); }
+  .aside-cta .btn { --btn-bg: var(--brass); --btn-fg: var(--charcoal); }
   .aside-cta .btn::before { background: var(--on-dark); }
   .aside-links { border-top: 1px solid var(--rule-strong); }
   .aside-links a { display: block; padding: 10px 0; border-bottom: 1px solid var(--rule); text-decoration: none; font-size: .9375rem; }
-  .aside-links a:hover { color: var(--copper-ink); }
+  .aside-links a:hover { color: var(--brass-ink); }
 
   .related-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 28px; border-top: 1px solid var(--rule-strong); }
   .related-list a { position: relative; display: grid; gap: 8px; align-content: start; height: 100%; padding: 22px 22px 56px 0; border-bottom: 1px solid var(--rule); text-decoration: none; }
   .related-list li + li a { padding-left: 22px; border-left: 1px solid var(--rule); }
-  .related-list .mono { color: var(--copper-ink); font-size: .6875rem; text-transform: uppercase; letter-spacing: .1em; }
+  .related-list .mono { color: var(--brass-ink); font-size: .6875rem; text-transform: uppercase; letter-spacing: .1em; }
   .related-name { font-family: var(--serif); font-size: 1.625rem; font-weight: 600; line-height: 1.1; }
   .related-sum { color: var(--ink-2); font-size: .9375rem; }
   .related-list .arrow { position: absolute; bottom: 24px; }
-  .related-list a:hover .related-name { color: var(--copper-ink); }
+  .related-list a:hover .related-name { color: var(--brass-ink); }
 
   .advice-links { padding-top: 0; }
   .advice-links ul { margin-top: 16px; display: grid; gap: 10px; }

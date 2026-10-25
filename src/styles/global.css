@@ -26,9 +26,9 @@
   --on-dark-2: #b3ada4;      /* 7.3:1 on charcoal */
   --rule-dark: rgba(241, 238, 232, .16);
 
-  /* Copper: Inspire Electrical's own accent (group sites use brass) */
-  --copper: #c8814f;         /* lines, nodes, text on charcoal: 5.2:1 */
-  --copper-ink: #9a4f28;     /* text on paper: 5.2:1 */
+  /* Brass: the Inspire group accent, as on trustinspire.com */
+  --brass: #b8976a;          /* group brass: lines, nodes, small text on charcoal: 6.0:1 */
+  --brass-ink: #76603e;      /* darker brass for text on paper: 5.2:1 */
 
   --sans: 'Inter Variable', 'Helvetica Neue', Arial, system-ui, sans-serif;
   --serif: 'Cormorant Garamond', Garamond, 'Times New Roman', serif;
@@ -74,7 +74,7 @@ img { height: auto; }
 address { font-style: normal; }
 button, input, select, textarea { font: inherit; color: inherit; }
 
-:focus-visible { outline: 2px solid var(--copper); outline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
 
 .skip-link {
   position: absolute; left: 16px; top: -120px; z-index: 200;
@@ -93,7 +93,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* Grounds ------------------------------------------------------------------ */
 
 .ground-dark { background: var(--charcoal); color: var(--on-dark); }
-.ground-dark ::selection { background: var(--copper); color: var(--charcoal); }
+.ground-dark ::selection { background: var(--brass); color: var(--charcoal); }
 .ground-paper { background: var(--paper); color: var(--ink); }
 .ground-white { background: var(--white); color: var(--ink); }
 
@@ -132,19 +132,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .ground-dark .lead { color: var(--on-dark-2); }
 .ground-paper .lead, .ground-white .lead { color: var(--ink-2); }
 
-/* Eyebrow: index number + spaced caps, adapted from inspire-av.com's label pattern */
+/* Label above a heading: small mono text in brass, as trustinspire.com uses for project types */
 .eyebrow {
-  display: flex; align-items: center; gap: 14px;
   font-family: var(--mono);
   font-size: .75rem;
-  letter-spacing: .14em;
-  text-transform: uppercase;
+  letter-spacing: .04em;
 }
-.eyebrow::before {
-  content: ''; flex: 0 0 28px; height: 1px; background: currentColor;
-}
-.ground-dark .eyebrow { color: var(--copper); }
-.ground-paper .eyebrow, .ground-white .eyebrow { color: var(--copper-ink); }
+.ground-dark .eyebrow { color: var(--brass); }
+.ground-paper .eyebrow, .ground-white .eyebrow { color: var(--brass-ink); }
 
 .mono { font-family: var(--mono); font-size: .8125rem; letter-spacing: .02em; }
 
@@ -154,11 +149,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .prose h3 { font-weight: 600; font-size: 1.1875rem; margin-top: 1.6em; }
 .prose ul, .prose ol { padding-left: 1.25em; }
 .prose li + li { margin-top: .4em; }
-.prose li::marker { color: var(--copper-ink); }
-.prose a { color: var(--copper-ink); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.prose li::marker { color: var(--brass-ink); }
+.prose a { color: var(--brass-ink); text-underline-offset: 3px; text-decoration-thickness: 1px; }
 .prose a:hover { text-decoration-thickness: 2px; }
 .prose strong { font-weight: 600; }
-.prose blockquote { border-left: 2px solid var(--copper-ink); padding-left: 1.2em; color: var(--ink-2); }
+.prose blockquote { border-left: 2px solid var(--brass-ink); padding-left: 1.2em; color: var(--ink-2); }
 .prose table { width: 100%; border-collapse: collapse; font-size: .9375rem; }
 .prose th, .prose td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
 .prose th { font-family: var(--mono); font-weight: 400; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
@@ -166,40 +161,26 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* Buttons and links ---------------------------------------------------------- */
 
 .btn {
-  --btn-bg: var(--copper);
-  --btn-fg: var(--charcoal);
   position: relative;
   display: inline-flex; align-items: center; justify-content: center; gap: 14px;
   min-height: 52px;
-  padding: 14px 26px;
-  border: 1px solid var(--btn-bg);
-  background: var(--btn-bg);
-  color: var(--btn-fg);
+  padding: 14px 24px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
   font-weight: 500;
   font-size: 1rem;
-  letter-spacing: .01em;
   text-decoration: none;
   cursor: pointer;
-  overflow: hidden;
-  isolation: isolate;
-  transition: color .45s var(--ease), border-color .45s var(--ease);
+  transition: background-color .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease);
 }
-.btn::before {
-  content: ''; position: absolute; inset: 0; z-index: -1;
-  background: var(--on-dark);
-  transform: scaleX(0); transform-origin: right;
-  transition: transform .55s var(--ease-out);
-}
-.btn:hover::before, .btn:focus-visible::before { transform: scaleX(1); transform-origin: left; }
-.btn:hover, .btn:focus-visible { border-color: var(--on-dark); }
-
-.btn--ghost { --btn-bg: transparent; --btn-fg: currentColor; border-color: currentColor; }
-.ground-dark .btn--ghost:hover { color: var(--charcoal); }
-.ground-paper .btn, .ground-white .btn { --btn-bg: var(--charcoal); --btn-fg: var(--on-dark); }
-.ground-paper .btn::before, .ground-white .btn::before { background: var(--copper-ink); }
-.ground-paper .btn:hover, .ground-white .btn:hover { border-color: var(--copper-ink); }
-.ground-paper .btn--ghost, .ground-white .btn--ghost { --btn-bg: transparent; --btn-fg: var(--ink); border-color: var(--ink); }
-.ground-paper .btn--ghost:hover, .ground-white .btn--ghost:hover { color: var(--on-dark); }
+.btn .arrow { color: var(--brass); }
+.ground-dark .btn:hover, .ground-dark .btn:focus-visible { background: var(--on-dark); color: var(--charcoal); border-color: var(--on-dark); }
+.ground-paper .btn:hover, .ground-paper .btn:focus-visible,
+.ground-white .btn:hover, .ground-white .btn:focus-visible { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.ground-paper .btn .arrow, .ground-white .btn .arrow { color: var(--brass-ink); }
+.btn--ghost { border-color: var(--rule-dark); }
+.ground-paper .btn--ghost, .ground-white .btn--ghost { border-color: var(--rule); }
 
 /* Arrow drawn as a rule with a head; it extends on hover */
 .arrow {
@@ -255,8 +236,8 @@ a:hover > .arrow, a:focus-visible > .arrow, button:hover > .arrow { width: 44px;
   font-family: var(--mono); font-size: .75rem; letter-spacing: .02em;
   opacity: .8;
 }
-.verify::before { content: 'TO VERIFY'; font-weight: 400; color: var(--copper-ink); }
-.ground-dark .verify::before { color: var(--copper); }
+.verify::before { content: 'TO VERIFY'; font-weight: 400; color: var(--brass-ink); }
+.ground-dark .verify::before { color: var(--brass); }
 
 /* Motion ------------------------------------------------------------------- */
 

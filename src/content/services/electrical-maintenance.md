@@ -7,7 +7,6 @@ group: projects
 order: 12
 summary: Periodic inspection, emergency lighting testing, remedials and tidy records.
 audience: Businesses, facilities managers and landlords
-drawing: maintenance
 schedule:
   - { label: Inspection, value: "Periodic inspection and testing (EICR)" }
   - { label: Life safety, value: "Emergency lighting functional and duration tests" }

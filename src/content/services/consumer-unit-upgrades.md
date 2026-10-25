@@ -7,7 +7,6 @@ group: domestic
 order: 3
 summary: Fuse box and consumer unit replacement, with the checks that should come first.
 audience: Homeowners and landlords
-drawing: board
 schedule:
   - { label: Enclosure, value: "Non-combustible, as the current wiring regulations require for homes" }
   - { label: Protection, value: "RCD or RCBO protection, with surge protection and AFDDs where appropriate" }

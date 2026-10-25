@@ -7,7 +7,6 @@ group: projects
 order: 10
 summary: Fit-outs, alterations and new installations for offices, shops, hospitality and workshops.
 audience: Business owners, facilities managers and contractors
-drawing: commercial
 schedule:
   - { label: Premises, value: "Offices, retail, hospitality, workshops, studios" }
   - { label: Work, value: "Fit-outs, refurbishments, alterations, new distribution" }

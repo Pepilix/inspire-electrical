@@ -7,7 +7,6 @@ group: domestic
 order: 6
 summary: Garden, landscape and exterior lighting, with power where the garden needs it.
 audience: Homeowners, garden designers and landscapers
-drawing: outdoor
 schedule:
   - { label: Lighting, value: "Path, step, wall, uplighting, feature trees, water" }
   - { label: Power, value: "Outdoor sockets, garden rooms, gates, pumps" }

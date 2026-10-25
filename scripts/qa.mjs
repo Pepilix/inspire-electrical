@@ -54,7 +54,7 @@ for (const file of files) {
   }
 
   for (const m of html.matchAll(/<img\b[^>]*>/g)) {
-    if (!/\balt="/.test(m[0])) problems.push(`${page}: <img> without alt: ${m[0].slice(0, 80)}`);
+    if (!/\salt(=|\s|\/?>)/.test(m[0])) problems.push(`${page}: <img> without alt: ${m[0].slice(0, 80)}`);
   }
 
   for (const m of html.matchAll(/\shref="([^"#?]+)(?:[?#][^"]*)?"/g)) {

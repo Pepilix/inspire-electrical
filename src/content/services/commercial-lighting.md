@@ -7,7 +7,6 @@ group: projects
 order: 11
 summary: LED upgrades, display and feature lighting, controls and emergency lighting.
 audience: Businesses, designers and contractors
-drawing: commercial-lighting
 schedule:
   - { label: Interiors, value: "Offices, shops, restaurants, bars, hotels, studios" }
   - { label: Work, value: "LED upgrades, new schemes, display and feature lighting" }

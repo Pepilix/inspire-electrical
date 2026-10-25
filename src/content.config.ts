@@ -3,12 +3,6 @@ import { glob, file } from 'astro/loaders';
 
 const faq = z.object({ q: z.string(), a: z.string() });
 
-/** Drawing placeholders shown until a real photograph is supplied (see src/components/Drawing.astro). */
-const drawing = z.enum([
-  'board', 'rewire', 'lighting', 'outdoor', 'testing', 'fault',
-  'domestic', 'newbuild', 'design', 'commercial', 'commercial-lighting', 'maintenance',
-]);
-
 const services = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/services' }),
   schema: z.object({
@@ -23,7 +17,6 @@ const services = defineCollection({
     summary: z.string(),
     /** Who the page is mainly for. */
     audience: z.string(),
-    drawing,
     /** Path under src/assets/ for a real photograph, once one exists. */
     image: z.string().optional(),
     imageAlt: z.string().optional(),

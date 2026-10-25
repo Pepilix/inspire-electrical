@@ -7,7 +7,6 @@ group: domestic
 order: 1
 summary: Extra sockets, new circuits, kitchens, bathrooms and alterations, from a single outlet upwards.
 audience: Homeowners and landlords
-drawing: domestic
 schedule:
   - { label: Typical jobs, value: "Sockets, switches, new circuits, kitchens, bathrooms, extensions" }
   - { label: Smallest job, value: "A single socket or light fitting" }

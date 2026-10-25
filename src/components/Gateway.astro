@@ -1,0 +1,139 @@
+---
+// Homepage opening, built on the trustinspire.com gateway: headline and intro, then three
+// photographic panels joined by a brass rule. Panels widen on hover (desktop) and stack on phones.
+// Photographs are Inspire group work used as imagery; they are not presented as electrical case studies.
+import { Image } from 'astro:assets';
+import { href } from '../lib/site';
+import stair from '../assets/group/cadogan-stair.jpg';
+import firstFix from '../assets/group/yarm-first-fix.jpg';
+import rack from '../assets/group/yarm-rack.jpg';
+
+const panels = [
+  { n: '01', name: 'Homes', line: 'Rewires, consumer units, lighting, testing and everyday electrical work.', link: 'Home services', path: '/services/#domestic', img: stair, eager: true },
+  { n: '02', name: 'New builds and renovations', line: 'Complete installations, planned with your architect and builder.', link: 'Project work', path: '/services/new-build-electrical-installation/', img: firstFix },
+  { n: '03', name: 'Commercial', line: 'Fit-outs, lighting, testing and maintenance for businesses.', link: 'Commercial services', path: '/services/commercial-electrical/', img: rack },
+];
+---
+<section class="gateway ground-dark" aria-labelledby="gateway-title">
+  <div class="wrap gateway-head">
+    <h1 id="gateway-title">
+      <span class="line"><span>Electrical installation,</span></span>
+      <span class="line"><span>done properly.</span></span>
+    </h1>
+    <p class="gateway-intro">Electrical work for homes, businesses and new builds across Harrogate, York, Wetherby and North Yorkshire. Part of Inspire, installing technology in homes since 2009.</p>
+  </div>
+
+  <div class="wrap">
+    <div class="panels-rule" aria-hidden="true">
+      <svg viewBox="0 0 100 2" preserveAspectRatio="none"><path d="M0 1H100" pathLength="1" /></svg>
+    </div>
+    <ul class="panels" role="list">
+      {panels.map((p) => (
+        <li>
+          <a class="panel" href={href(p.path)}>
+            <span class="panel-media" aria-hidden="true">
+              <Image src={p.img} alt="" widths={[480, 800, 1200]} sizes="(max-width: 860px) 100vw, 34vw" loading={p.eager ? 'eager' : 'lazy'} fetchpriority={p.eager ? 'high' : undefined} />
+            </span>
+            <span class="marks" aria-hidden="true"></span>
+            <span class="node" aria-hidden="true"></span>
+            <span class="panel-body">
+              <span class="panel-index" aria-hidden="true">{p.n}</span>
+              <span class="panel-name">{p.name}</span>
+              <span class="panel-line">{p.line}</span>
+              <span class="panel-link">{p.link} <span class="arrow" aria-hidden="true"></span></span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .gateway { padding-bottom: clamp(48px, 7vw, 96px); }
+  .gateway-head {
+    display: grid;
+    grid-template-columns: minmax(0, 9fr) minmax(0, 4fr);
+    gap: 16px clamp(32px, 5vw, 80px);
+    align-items: end;
+    padding-top: clamp(20px, 4vh, 48px);
+    padding-bottom: clamp(24px, 4vh, 40px);
+  }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(2.5rem, 4.5vw, 4rem);
+    line-height: 1.02;
+    letter-spacing: -.01em;
+  }
+  h1 .line { display: block; overflow: hidden; padding-bottom: .06em; margin-bottom: -.06em; }
+  h1 .line > span { display: block; }
+  .gateway-intro { color: var(--on-dark-2); font-size: 1.0625rem; max-width: 30em; }
+
+  .panels-rule { position: relative; height: 1px; margin-bottom: -1px; z-index: 2; }
+  .panels-rule svg { position: absolute; inset: -1px 0; width: 100%; height: 3px; overflow: visible; }
+  .panels-rule path { fill: none; stroke: var(--brass); stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+  .panels { display: flex; gap: 6px; height: clamp(400px, calc(100svh - var(--header-h) - 230px), 680px); }
+  .panels > li { flex: 1 1 0; min-width: 0; display: flex; transition: flex-grow .8s var(--ease); }
+  .panel { position: relative; display: flex; width: 100%; overflow: hidden; color: var(--on-dark); isolation: isolate; text-decoration: none; }
+  .panel-media { position: absolute; inset: 0; z-index: -2; background: var(--charcoal-2); }
+  .panel-media :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease-out), filter .8s var(--ease); }
+  .panel::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgba(35, 31, 32, .88) 0%, rgba(35, 31, 32, .38) 42%, rgba(35, 31, 32, 0) 70%); }
+
+  .marks { position: absolute; inset: 14px; pointer-events: none; transition: inset .6s var(--ease-out); }
+  .marks::before, .marks::after { content: ''; position: absolute; width: 14px; height: 14px; border-color: rgba(241, 238, 232, .55); border-style: solid; }
+  .marks::before { right: 0; top: 0; border-width: 1px 1px 0 0; }
+  .marks::after { left: 0; bottom: 0; border-width: 0 0 1px 1px; }
+  .node { position: absolute; left: 0; top: -4px; z-index: 3; width: 9px; height: 9px; border: 1px solid var(--brass); background: var(--charcoal); border-radius: 50%; }
+
+  .panel-body { align-self: flex-end; display: grid; gap: 8px; width: 100%; padding: clamp(20px, 2.4vw, 36px); }
+  .panel-index { font-family: var(--mono); font-size: .75rem; color: var(--brass); letter-spacing: .04em; }
+  .panel-name { font-family: var(--serif); font-weight: 600; font-size: clamp(1.75rem, 2.7vw, 2.5rem); line-height: 1.05; }
+  .panel-line { color: var(--on-dark-2); max-width: 26em; transition: color .5s var(--ease), transform .7s var(--ease-out); }
+  .panel-link { display: flex; align-items: center; gap: 12px; margin-top: 6px; font-weight: 500; font-size: .9375rem; }
+  .panel-link .arrow { color: var(--on-dark); }
+
+  @media (hover: hover) and (min-width: 861px) {
+    .panels:hover > li:hover, .panels:focus-within > li:focus-within { flex-grow: 1.45; }
+    .panels:hover > li:not(:hover) .panel-media :global(img) { filter: brightness(.55) saturate(.8); }
+    .panel:hover .panel-media :global(img), .panel:focus-visible .panel-media :global(img) { transform: scale(1.045); }
+    .panel:hover .marks, .panel:focus-visible .marks { inset: 22px; }
+    .panel:hover .panel-line, .panel:focus-visible .panel-line { color: var(--on-dark); transform: translateY(-3px); }
+  }
+  .panel:hover .arrow, .panel:focus-visible .arrow { width: 44px; }
+  .panel:focus-visible { outline-offset: -2px; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) h1 .line > span { animation: rise 1.1s var(--ease-out) both; }
+    :global(.js) h1 .line:nth-child(2) > span { animation-delay: .12s; }
+    :global(.js) .gateway-intro { animation: fade 1s var(--ease) .35s both; }
+    :global(.js) .panels-rule path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.6s var(--ease) .3s forwards; }
+    :global(.js) .node { animation: pop .5s var(--ease-out) both; }
+    :global(.js) .panels > li:nth-child(1) .node { animation-delay: .35s; }
+    :global(.js) .panels > li:nth-child(2) .node { animation-delay: .85s; }
+    :global(.js) .panels > li:nth-child(3) .node { animation-delay: 1.35s; }
+  }
+  @keyframes rise { from { transform: translateY(105%); } }
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes pop { from { transform: scale(0); } }
+
+  @media (max-width: 860px) {
+    .gateway-head { grid-template-columns: 1fr; gap: 12px; padding-top: 18px; padding-bottom: 20px; }
+    h1 { font-size: clamp(2rem, 8.4vw, 2.5rem); line-height: 1.08; text-wrap: balance; }
+    h1 .line, h1 .line > span { display: inline; }
+    h1 .line + .line::before { content: ' '; }
+    :global(.js) h1 .line > span { animation-name: fade; }
+    .gateway-intro { font-size: .9375rem; }
+    .panels { flex-direction: column; height: auto; gap: 6px; }
+    .panels > li { flex: none; }
+    .panel { min-height: clamp(132px, 19svh, 190px); }
+    .panel::before { background: linear-gradient(to right, rgba(35, 31, 32, .84) 0%, rgba(35, 31, 32, .47) 60%, rgba(35, 31, 32, .15) 100%); }
+    .panel-body { align-self: center; gap: 4px; padding: 16px 18px; }
+    .panel-index, .panel-line, .node, .panels-rule, .marks::after { display: none; }
+    .panel-name { font-size: 1.75rem; }
+    .panel-link { margin-top: 2px; font-size: .875rem; color: var(--on-dark-2); }
+    .marks { inset: 10px; }
+  }
+</style>

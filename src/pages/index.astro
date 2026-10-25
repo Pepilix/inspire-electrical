@@ -2,31 +2,23 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import Hero from '../components/Hero.astro';
-import ServiceExplorer from '../components/ServiceExplorer.astro';
+import Gateway from '../components/Gateway.astro';
 import CoverageMap from '../components/CoverageMap.astro';
 import Process from '../components/Process.astro';
-import Credentials from '../components/Credentials.astro';
 import Faqs from '../components/Faqs.astro';
 import CtaBand from '../components/CtaBand.astro';
+import Verify from '../components/Verify.astro';
 import { company } from '../data/company';
 import { href, absolute } from '../lib/site';
 import firstFix from '../assets/group/yarm-first-fix.jpg';
 import cinema from '../assets/group/yarm-cinema.webp';
-import stair from '../assets/group/cadogan-stair.jpg';
-import rack from '../assets/group/yarm-rack.jpg';
 
-const faqs = (await getCollection('faqs')).sort((a, b) => a.data.order - b.data.order).map((f) => f.data);
-const projects = (await getCollection('projects', (p) => !p.data.draft)).sort((a, b) => +b.data.completed - +a.data.completed).slice(0, 3);
-
-const reasons = [
-  { t: 'Designed before it is installed', d: 'Layouts, circuits and lighting are worked out on paper first, so you know what you are getting and the installation is right first time.' },
-  { t: 'Coordinated with everyone else on site', d: 'Builders, kitchen fitters, plumbers, joiners and AV installers all depend on the electrics. We agree positions and timings with them, not around them.' },
-  { t: 'Lighting understood properly', d: 'Layered schemes, concealed LED, dimming that does not flicker and lighting control that is wired correctly from first fix.' },
-  { t: 'Technology-ready', d: 'Part of the same group as Inspire Audio Visual, so data, AV, control and EV provision are planned in, not added later.' },
-  { t: 'Paperwork you can rely on', d: 'Certificates for every job, notifiable work registered, circuits labelled and records handed over.' },
-  { t: 'Small jobs done just as carefully', d: 'One extra socket gets the same checks and testing as a new house. There is no minimum size of job.' },
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const groups = [
+  { id: 'homes', title: 'For homes', items: services.filter((s) => s.data.group === 'domestic') },
+  { id: 'projects', title: 'Projects and commercial', items: services.filter((s) => s.data.group === 'projects') },
 ];
+const faqs = (await getCollection('faqs')).sort((a, b) => a.data.order - b.data.order).map((f) => f.data);
 
 const schema = [
   {
@@ -46,255 +38,157 @@ const schema = [
   canonical="/"
   schema={schema}
 >
-  <Hero />
+  <Gateway />
 
-  <div class="circuit" data-circuit>
-    <span class="circuit-line" aria-hidden="true"><span class="circuit-fill"></span></span>
-
-    <!-- 2. Introduction -->
-    <section class="section ground-paper intro" aria-labelledby="intro-title">
-      <div class="wrap intro-grid">
-        <div class="intro-copy">
-          <span class="c-node" data-circuit-node aria-hidden="true"></span>
-          <p class="eyebrow">01 · Inspire Electrical</p>
-          <h2 class="h2 intro-title" id="intro-title" data-reveal>Electrical work that is thought through before the first cable is pulled.</h2>
-          <div class="intro-text" data-reveal data-reveal-delay="1">
-            <p class="lead">Inspire Electrical installs, designs, tests and maintains electrical systems for homes, businesses and developments across North Yorkshire.</p>
-            <p>The same standard applies whether you need an extra socket in the kitchen or the complete installation for a new house: check what is there, plan it properly, install it neatly, test it and leave the paperwork in order.</p>
-            <p>Inspire Electrical is part of <a href={company.group.url}>Inspire</a>, the group behind <a href="https://www.inspire-av.com/">Inspire Audio Visual</a>, which has designed and installed smart home, lighting and cinema systems in demanding homes since {company.group.since}. Inspire Electrical is the group's newest business, bringing electrical contracting alongside that technology work.</p>
-          </div>
-          <a class="text-link intro-link" href={href('/about/')}><span>About Inspire Electrical</span><span class="arrow" aria-hidden="true"></span></a>
+  <!-- About: the story, the same before/after pair used on trustinspire.com, and a title block -->
+  <section class="section ground-paper about" id="about" aria-labelledby="about-title">
+    <div class="wrap about-grid">
+      <div>
+        <h2 id="about-title" class="statement" data-reveal>Small jobs and whole houses, by the people who have wired demanding homes since 2009.</h2>
+        <div class="about-text" data-reveal>
+          <p>Inspire started out wiring and programming smart homes. That work only succeeds when the electrical installation underneath it is right: the cable routes, the consumer unit, the lighting circuits and the paperwork.</p>
+          <p>Inspire Electrical is the group's electrical contracting business. We take on everything from an extra socket or a consumer unit change to the complete installation for a new house, and we work alongside builders, architects and the rest of the Inspire team.</p>
         </div>
-        <figure class="intro-figure">
-          <div class="intro-back" data-reveal="clip">
-            <Image src={firstFix} alt="A room at first fix, with open roof trusses, block walls and new stud framing" widths={[480, 800, 1200]} sizes="(max-width: 860px) 90vw, 36vw" loading="lazy" data-parallax="-0.04" />
-          </div>
-          <div class="intro-front" data-reveal="clip" data-reveal-delay="2">
-            <Image src={cinema} alt="The same room finished as a home cinema with recessed lighting" widths={[400, 700, 1000]} sizes="(max-width: 860px) 70vw, 28vw" loading="lazy" data-parallax="0.05" />
-          </div>
-          <figcaption class="mono"><span class="dim" aria-hidden="true"></span>Inspire Audio Visual project, Yarm: first fix and handover. Shown as group work, not an Inspire Electrical project.</figcaption>
-        </figure>
+        <dl class="title-block" data-reveal>
+          <div><dt>Practice</dt><dd>Inspire Electrical</dd></div>
+          <div><dt>Part of</dt><dd><a href={company.group.url}>Inspire</a>, est. {company.group.since}</dd></div>
+          <div><dt>Studio</dt><dd>{company.group.studio}</dd></div>
+          <div><dt>Working across</dt><dd>Harrogate, York, Wetherby</dd></div>
+          <div><dt>Registration</dt><dd>{company.competentPersonScheme ? company.competentPersonScheme.name : <Verify label="Scheme" />}</dd></div>
+          <div><dt>Certification</dt><dd>Every job, to BS 7671</dd></div>
+        </dl>
       </div>
-    </section>
-
-    <!-- 3. Services -->
-    <section class="section ground-dark" id="services" aria-labelledby="services-title">
-      <div class="wrap">
-        <div class="section-head">
-          <span class="c-node" data-circuit-node aria-hidden="true"></span>
-          <p class="eyebrow">02 · Services</p>
-          <h2 class="h2" id="services-title" data-reveal>From a single socket to a complete installation.</h2>
-          <p class="lead" data-reveal data-reveal-delay="1">Two kinds of client, one standard. Choose a service to see what is involved.</p>
+      <figure class="layers">
+        <div class="layer layer--back" data-reveal="clip">
+          <Image src={firstFix} alt="A room at first fix: open roof trusses, block walls and new stud framing" widths={[480, 800, 1200]} sizes="(max-width: 860px) 82vw, 34vw" loading="lazy" data-parallax="-0.04" />
         </div>
-        <ServiceExplorer />
-        <p class="all-services"><a class="text-link" href={href('/services/')}><span>All services</span><span class="arrow" aria-hidden="true"></span></a></p>
-      </div>
-    </section>
-
-    <!-- 4. Why Inspire Electrical -->
-    <section class="section ground-paper" aria-labelledby="why-title">
-      <div class="wrap">
-        <div class="section-head section-head--split">
-          <span class="c-node" data-circuit-node aria-hidden="true"></span>
-          <div>
-            <p class="eyebrow">03 · Why Inspire Electrical</p>
-            <h2 class="h2" id="why-title" data-reveal>Approachable enough for a socket. Thorough enough for an architect.</h2>
-          </div>
+        <div class="layer layer--front" data-reveal="clip">
+          <Image src={cinema} alt="The same room finished, with recessed lighting and a projection screen" widths={[400, 700, 1000]} sizes="(max-width: 860px) 70vw, 28vw" loading="lazy" data-parallax="0.05" />
         </div>
-        <ol class="reasons" role="list">
-          {reasons.map((r, i) => (
-            <li class="reason" data-reveal data-reveal-delay={String(i % 3)}>
-              <span class="reason-n mono">{String(i + 1).padStart(2, '0')}</span>
-              <h3 class="reason-title">{r.t}</h3>
-              <p>{r.d}</p>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
+        <figcaption><span class="dim" aria-hidden="true"></span>An Inspire room in Yarm, at first fix and at handover.</figcaption>
+      </figure>
+    </div>
+  </section>
 
-    <!-- 5. Projects -->
-    <section class="section ground-dark" aria-labelledby="projects-title">
-      <div class="wrap">
-        <div class="section-head section-head--split">
-          <span class="c-node" data-circuit-node aria-hidden="true"></span>
-          <div>
-            <p class="eyebrow">04 · Projects</p>
-            <h2 class="h2" id="projects-title" data-reveal>{projects.length ? 'Recent projects' : 'Project work'}</h2>
+  <!-- Services -->
+  <section class="section ground-dark" id="services" aria-labelledby="services-title">
+    <div class="wrap">
+      <div class="head">
+        <h2 id="services-title" class="h2">Services</h2>
+        <p>Domestic work and project work, done to the same standard.</p>
+      </div>
+      <div class="svc-cols">
+        {groups.map((g) => (
+          <div class="svc-col" data-reveal>
+            <p class="eyebrow svc-col-label">{g.title}</p>
+            <ul role="list" class="svc-list">
+              {g.items.map((s) => (
+                <li>
+                  <a href={href(`/services/${s.id}/`)}>
+                    <span class="svc-name">{s.data.navTitle}</span>
+                    <span class="svc-sum">{s.data.summary}</span>
+                    <span class="arrow" aria-hidden="true"></span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-          <p class="lead" data-reveal data-reveal-delay="1">
-            {projects.length
-              ? 'A selection of recent work, with the scope, challenges and solution for each.'
-              : 'Inspire Electrical’s own case studies will be published here as projects complete. Until then, this is lighting and infrastructure work from the wider Inspire group, carried out by Inspire Audio Visual.'}
-          </p>
-        </div>
-
-        {projects.length > 0 ? (
-          <ul role="list" class="proj-grid">
-            {projects.map((p) => (
-              <li><a href={href(`/projects/${p.id}/`)} class="proj-card"><span class="mono">{p.data.type} · {p.data.location}</span><span class="h3">{p.data.title}</span><span class="arrow" aria-hidden="true"></span></a></li>
-            ))}
-          </ul>
-        ) : (
-          <div class="group-work">
-            <article class="gw gw--a">
-              <div class="gw-media" data-reveal="clip"><Image src={stair} alt="Staircase at Cadogan Place with LED step lights and a parquet hallway" widths={[400, 700, 1000]} sizes="(max-width: 860px) 90vw, 30vw" loading="lazy" data-parallax="0.05" /></div>
-              <div class="gw-info" data-reveal>
-                <p class="mono gw-kind">Group work · Inspire Audio Visual</p>
-                <h3 class="h3">Cadogan Place, Belgravia</h3>
-                <p>Lutron lighting and Sonos audio retrofitted into a Georgian townhouse during its renovation.</p>
-                <dl class="schedule">
-                  <div><dt>Lighting</dt><dd>Lutron, whole-home scenes</dd></div>
-                  <div><dt>Audio</dt><dd>Four Sonos zones</dd></div>
-                </dl>
-                <a class="text-link" href="https://www.inspire-av.com/project/london-lutron-and-sonos-installation/"><span>Case study on inspire-av.com</span><span class="arrow" aria-hidden="true"></span></a>
-              </div>
-            </article>
-            <article class="gw gw--b">
-              <div class="gw-media" data-reveal="clip"><Image src={rack} alt="Equipment rack with labelled speaker connections" widths={[400, 700, 1000]} sizes="(max-width: 860px) 90vw, 30vw" loading="lazy" data-parallax="0.05" /></div>
-              <div class="gw-info" data-reveal>
-                <p class="mono gw-kind">Group work · Inspire Audio Visual</p>
-                <h3 class="h3">Home cinema, Yarm</h3>
-                <p>A cinema in a purpose-built room in a new-build home, from first fix cabling to commissioning.</p>
-                <dl class="schedule">
-                  <div><dt>Audio</dt><dd>7.2.4 Dolby Atmos</dd></div>
-                  <div><dt>Control</dt><dd>Control4</dd></div>
-                </dl>
-                <a class="text-link" href="https://www.inspire-av.com/project/yarm-home-cinema/"><span>Case study on inspire-av.com</span><span class="arrow" aria-hidden="true"></span></a>
-              </div>
-            </article>
-          </div>
-        )}
-        <p class="all-services"><a class="text-link" href={href('/projects/')}><span>Projects</span><span class="arrow" aria-hidden="true"></span></a></p>
+        ))}
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 6. Where we work -->
-    <section class="section ground-paper" aria-labelledby="areas-title">
-      <div class="wrap">
-        <div class="section-head section-head--split">
-          <span class="c-node" data-circuit-node aria-hidden="true"></span>
-          <div>
-            <p class="eyebrow">05 · Where we work</p>
-            <h2 class="h2" id="areas-title" data-reveal>Harrogate, York, Wetherby and the country between.</h2>
-          </div>
-          <p class="lead" data-reveal data-reveal-delay="1">We work across the triangle between the three towns and out to Ripon, Thirsk and Tadcaster. Select a town for local information.</p>
-        </div>
-        <CoverageMap />
+  <!-- Where we work -->
+  <section class="section ground-paper" aria-labelledby="areas-title">
+    <div class="wrap">
+      <div class="head head--paper">
+        <h2 id="areas-title" class="h2">Where we work</h2>
+        <p>Harrogate, York, Wetherby and the towns and villages between them.</p>
       </div>
-    </section>
+      <div class="areas-map"><CoverageMap /></div>
+    </div>
+  </section>
 
-    <!-- 7. Approach -->
-    <section class="section ground-dark" aria-labelledby="approach-title">
-      <div class="wrap">
-        <div class="section-head">
-          <span class="c-node" data-circuit-node aria-hidden="true"></span>
-          <p class="eyebrow">06 · How it works</p>
-          <h2 class="h2" id="approach-title" data-reveal>Five steps, whatever the size of the job.</h2>
-        </div>
-        <Process />
+  <!-- How a job runs -->
+  <section class="section ground-dark" aria-labelledby="approach-title">
+    <div class="wrap">
+      <div class="head">
+        <h2 id="approach-title" class="h2">How a job runs</h2>
+        <p>The same five steps for a socket or a new house.</p>
       </div>
-    </section>
+      <div class="process-wrap"><Process /></div>
+    </div>
+  </section>
 
-    <!-- 8. Credentials -->
-    <section class="section ground-paper" aria-labelledby="cred-title">
-      <div class="wrap">
-        <div class="section-head section-head--split">
-          <span class="c-node" data-circuit-node aria-hidden="true"></span>
-          <div>
-            <p class="eyebrow">07 · Credentials</p>
-            <h2 class="h2" id="cred-title" data-reveal>Standards, registration and insurance.</h2>
-          </div>
-          <p class="lead" data-reveal data-reveal-delay="1">What you should expect from any electrician you employ, and how we meet it.</p>
-        </div>
-        <Credentials />
-      </div>
-    </section>
+  <section class="section ground-paper">
+    <div class="wrap"><Faqs items={faqs} /></div>
+  </section>
 
-    <!-- 9. FAQs -->
-    <section class="section ground-white">
-      <div class="wrap">
-        <span class="c-node c-node--faq" data-circuit-node aria-hidden="true"></span>
-        <Faqs items={faqs} />
-      </div>
-    </section>
-  </div>
-
-  <!-- 10. Final CTA -->
   <CtaBand context="home" />
 </Base>
 
 <style>
-  /* Circuit line: a copper single-line diagram running down the page (wide screens) */
-  .circuit { position: relative; }
-  .circuit-line { position: absolute; top: 0; bottom: 0; z-index: 2; width: 1px; left: calc(max(0px, (100% - var(--wrap)) / 2) + var(--gutter) / 2); background: rgba(154, 79, 40, .25); pointer-events: none; }
-  .circuit-fill { position: absolute; inset: 0; background: var(--copper); transform-origin: top; transform: scaleY(var(--progress, 0)); }
-  .c-node { position: absolute; left: calc(var(--gutter) / -2 - 4.5px); top: 4px; z-index: 3; width: 10px; height: 10px; border: 1px solid var(--copper); border-radius: 50%; background: var(--paper); transition: background .4s var(--ease), box-shadow .4s; }
-  .ground-dark .c-node { background: var(--charcoal); }
-  :global(.c-node.is-live) { background: var(--copper) !important; box-shadow: 0 0 0 4px rgba(200, 129, 79, .18); }
-  .c-node--faq { position: relative; display: block; left: calc(var(--gutter) / -2 - 4.5px); top: 0; margin-bottom: -10px; }
-  :global(html:not(.js)) .circuit-fill { transform: none; }
-  @media (max-width: 1199px) { .circuit-line, .c-node { display: none; } }
+  .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 16px 48px; flex-wrap: wrap;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule-dark);
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+  .head p { color: var(--on-dark-2); max-width: 30em; }
+  .head--paper { border-bottom-color: var(--rule); }
+  .head--paper p { color: var(--ink-2); }
 
-  .section-head { position: relative; display: grid; gap: 20px; max-width: 880px; margin-bottom: clamp(40px, 6vw, 72px); }
-  .section-head--split { max-width: none; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: end; gap: 20px clamp(32px, 6vw, 96px); }
-  .section-head .h2 { margin-top: 18px; }
-  .section-head--split .lead { padding-bottom: 6px; }
-  .all-services { margin-top: clamp(40px, 5vw, 64px); }
+  /* About: as on trustinspire.com */
+  .about-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 56px clamp(40px, 7vw, 112px); align-items: start; }
+  .statement { font-family: var(--serif); font-weight: 500; font-size: clamp(1.875rem, 3.4vw, 3rem); line-height: 1.1; max-width: 20ch; text-wrap: balance; }
+  .about-text { margin-top: clamp(28px, 3vw, 40px); max-width: 36em; }
+  .about-text p { line-height: 1.65; color: var(--ink-2); }
+  .about-text p + p { margin-top: 1em; }
+  .title-block { display: grid; grid-template-columns: 1fr 1fr; margin-top: clamp(36px, 4vw, 56px); border: 1px solid var(--ink); max-width: 560px; }
+  .title-block > div { padding: 12px 14px; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .title-block > div:nth-child(2n) { border-right: 0; }
+  .title-block > div:nth-last-child(-n+2) { border-bottom: 0; }
+  .title-block dt { font-family: var(--mono); font-size: .6875rem; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; }
+  .title-block dd { font-weight: 500; margin-top: 2px; }
+  .title-block a { text-underline-offset: 3px; }
 
-  /* Intro */
-  .intro-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 56px clamp(40px, 7vw, 112px); align-items: center; }
-  .intro-copy { position: relative; }
-  .intro-title { margin-top: 18px; }
-  .intro-text { margin-top: 32px; max-width: 36em; }
-  .intro-text p + p { margin-top: 1em; color: var(--ink-2); }
-  .intro-text a { color: var(--copper-ink); text-underline-offset: 3px; }
-  .intro-link { margin-top: 28px; }
-  .intro-figure { position: relative; margin: 0; padding-bottom: 20px; }
-  .intro-back, .intro-front { overflow: hidden; }
-  .intro-back { width: 84%; aspect-ratio: 4 / 3; }
-  .intro-front { position: relative; width: 66%; aspect-ratio: 4 / 3; margin: -32% 0 0 auto; outline: 10px solid var(--paper); }
-  .intro-back :global(img), .intro-front :global(img) { width: 100%; height: 112%; margin-top: -6%; object-fit: cover; }
-  .intro-back :global(img) { filter: grayscale(.3); }
-  .intro-figure figcaption { display: flex; gap: 14px; align-items: center; margin-top: 20px; font-size: .75rem; color: var(--ink-3); }
-  .dim { position: relative; flex: 0 0 48px; height: 1px; background: var(--copper-ink); }
-  .dim::before, .dim::after { content: ''; position: absolute; top: -4px; width: 1px; height: 9px; background: var(--copper-ink); }
+  .layers { position: relative; margin: 0; padding-bottom: 72px; }
+  .layer { overflow: hidden; }
+  .layer :global(img) { width: 100%; height: 112%; margin-top: -6%; object-fit: cover; }
+  .layer--back { width: 82%; aspect-ratio: 4 / 3; }
+  .layer--back :global(img) { filter: grayscale(.25); }
+  .layer--front { position: relative; width: 70%; aspect-ratio: 4 / 3; margin: -34% 0 0 auto; outline: 10px solid var(--paper); }
+  .layers figcaption { display: flex; align-items: center; gap: 14px; margin-top: 20px; font-size: .875rem; color: var(--ink-2); }
+  .dim { position: relative; flex: 0 0 56px; height: 1px; background: var(--brass); }
+  .dim::before, .dim::after { content: ''; position: absolute; top: -4px; width: 1px; height: 9px; background: var(--brass); }
   .dim::before { left: 0; } .dim::after { right: 0; }
 
-  /* Reasons: a numbered schedule rather than cards */
-  .reasons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--rule-strong); }
-  .reason { padding: 28px 28px 36px 0; border-bottom: 1px solid var(--rule); position: relative; }
-  .reason:not(:nth-child(3n + 1)) { padding-left: 28px; border-left: 1px solid var(--rule); }
-  .reason-n { color: var(--copper-ink); font-size: .75rem; }
-  .reason-title { margin-top: 14px; font-family: var(--serif); font-weight: 600; font-size: 1.75rem; line-height: 1.1; }
-  .reason p { margin-top: 12px; color: var(--ink-2); }
-  .reason::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--copper-ink); transform: scaleX(0); transform-origin: left; transition: transform .7s var(--ease-out); }
-  .reason:hover::after { transform: scaleX(1); }
-
-  /* Group work */
-  .group-work { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 80px); }
-  .gw { display: grid; gap: 28px; }
-  .gw--b { margin-top: clamp(0px, 10vw, 140px); }
-  .gw-media { overflow: hidden; aspect-ratio: 4 / 5; background: var(--charcoal-2); }
-  .gw-media :global(img) { width: 100%; height: 112%; margin-top: -6%; object-fit: cover; }
-  .gw-kind { color: var(--copper); font-size: .75rem; }
-  .gw-info .h3 { margin-top: 10px; }
-  .gw-info > p:not(.gw-kind) { margin-top: 12px; color: var(--on-dark-2); }
-  .gw-info .schedule { margin-top: 20px; }
-  .gw-info .text-link { margin-top: 20px; }
-  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .proj-card { display: grid; gap: 10px; padding: 24px; border: 1px solid var(--rule-dark); text-decoration: none; min-height: 220px; align-content: end; }
-
-  @media (max-width: 960px) {
-    .intro-grid, .section-head--split, .group-work { grid-template-columns: 1fr; }
-    .gw--b { margin-top: 0; }
-    .reasons { grid-template-columns: 1fr 1fr; }
-    .reason:not(:nth-child(3n + 1)) { padding-left: 0; border-left: 0; }
-    .reason:nth-child(even) { padding-left: 24px; border-left: 1px solid var(--rule); }
+  /* Services: two plain lists, like the trustinspire contact list */
+  .svc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 40px clamp(40px, 6vw, 96px); }
+  .svc-col-label { margin-bottom: 14px; }
+  .svc-list { border-top: 1px solid var(--on-dark-2); }
+  .svc-list a {
+    display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 16px;
+    padding-block: 18px;
+    border-bottom: 1px solid var(--rule-dark);
+    text-decoration: none;
   }
-  @media (max-width: 600px) {
-    .reasons { grid-template-columns: 1fr; }
-    .reason:nth-child(even) { padding-left: 0; border-left: 0; }
-    .reason { padding-right: 0; }
+  .svc-name { font-family: var(--serif); font-weight: 500; font-size: clamp(1.375rem, 2vw, 1.75rem); line-height: 1.15; }
+  .svc-sum { grid-column: 1; color: var(--on-dark-2); font-size: .875rem; }
+  .svc-list .arrow { grid-column: 2; grid-row: 1 / span 2; color: var(--brass); }
+  .svc-list a:hover .svc-name { color: var(--brass); }
+
+  .areas-map { max-width: 1100px; }
+  .process-wrap { margin-top: 12px; }
+
+  @media (max-width: 860px) {
+    .about-grid, .svc-cols { grid-template-columns: 1fr; }
+    .layers { padding-bottom: 0; }
+  }
+  @media (max-width: 420px) {
+    .title-block { grid-template-columns: 1fr; }
+    .title-block > div { border-right: 0; }
+    .title-block > div:nth-last-child(2) { border-bottom: 1px solid var(--rule); }
   }
 </style>

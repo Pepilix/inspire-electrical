@@ -7,7 +7,6 @@ group: domestic
 order: 2
 summary: Full and partial rewires, planned around how you live in the house and what comes after.
 audience: Homeowners, renovators and landlords
-drawing: rewire
 schedule:
   - { label: Scope, value: "Full rewire, partial rewire, or rewire as part of a renovation" }
   - { label: Survey, value: "Condition assessment of the existing installation before quoting" }

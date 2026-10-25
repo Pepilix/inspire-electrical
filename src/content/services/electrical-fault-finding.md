@@ -7,7 +7,6 @@ group: domestic
 order: 7
 summary: Tripping breakers, dead circuits and intermittent faults, traced methodically.
 audience: Homeowners, landlords and businesses
-drawing: fault
 schedule:
   - { label: Typical faults, value: "Tripping RCDs, dead sockets, flicker, buzzing, heat" }
   - { label: Method, value: "Isolate, test, trace and record" }

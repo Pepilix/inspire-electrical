@@ -7,7 +7,6 @@ group: domestic
 order: 5
 summary: From a new pendant to layered architectural lighting and scene control.
 audience: Homeowners, designers and architects
-drawing: lighting
 schedule:
   - { label: Scope, value: "Replacement fittings to full architectural lighting schemes" }
   - { label: Control, value: "Conventional, dimmed, scene-based and app-controlled" }

@@ -7,7 +7,6 @@ group: domestic
 order: 4
 summary: Condition reports for homeowners, landlords and businesses, with findings explained plainly.
 audience: Homeowners, buyers, landlords and businesses
-drawing: testing
 schedule:
   - { label: Report, value: "Electrical Installation Condition Report (EICR) to BS 7671" }
   - { label: For, value: "Homeowners, buyers, landlords, letting agents, businesses" }

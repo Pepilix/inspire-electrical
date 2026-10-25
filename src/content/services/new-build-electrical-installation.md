@@ -7,7 +7,6 @@ group: projects
 order: 8
 summary: Complete installations for new homes and major renovations, coordinated with the rest of the build.
 audience: Self-builders, developers, builders and architects
-drawing: newbuild
 schedule:
   - { label: Stages, value: "Design input, temporary supplies, first fix, second fix, testing" }
   - { label: Inputs, value: "Architect's drawings, lighting design, M&E and kitchen layouts" }
