@@ -2,8 +2,11 @@
 
 export const isProduction = import.meta.env.PRODUCTION === 'true' || process.env.PRODUCTION === 'true';
 
-/** Unverified-content markers are shown on preview builds and never on the live site. */
-export const showPlaceholders = !isProduction;
+/**
+ * Unverified details are never shown on the site, preview included: they are tracked in
+ * docs/verification-checklist.md instead. Set SHOW_PLACEHOLDERS=true locally to see where they would go.
+ */
+export const showPlaceholders = process.env.SHOW_PLACEHOLDERS === 'true';
 
 export const formEndpoint: string = import.meta.env.PUBLIC_FORM_ENDPOINT ?? '';
 export const gtmId: string = import.meta.env.PUBLIC_GTM_ID ?? '';

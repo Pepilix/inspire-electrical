@@ -36,7 +36,7 @@ const crumbs = [{ label: 'Projects', path: '/projects/' }];
         )}
         <ul role="list" class="projects" data-projects>
           {projects.map((p, i) => (
-            <li data-type={p.data.type} data-reveal>
+            <li data-type={p.data.type}>
               <a href={href(`/projects/${p.id}/`)}>
                 <span class="p-media">{covers[i] ? <Image src={covers[i]!.img} alt={covers[i]!.alt} widths={[480, 800]} sizes="(max-width: 860px) 100vw, 45vw" loading="lazy" /> : null}</span>
                 <span class="mono p-meta">{p.data.type} · {p.data.location}</span>

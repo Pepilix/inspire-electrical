@@ -13,10 +13,6 @@ export function track(event: string, params: Record<string, string> = {}) {
   window.dataLayer.push({ event, ...params });
 }
 
-// Header: hairline once scrolled; hides on scroll down and returns on scroll up.
-const header = document.querySelector<HTMLElement>('[data-header]');
-const bar = document.querySelector<HTMLElement>('[data-mobile-bar]');
-let lastY = window.scrollY;
 
 // Services panel (desktop): the toggle button opens it for keyboard and touch users.
 document.querySelectorAll<HTMLElement>('[data-panel-item]').forEach((item) => {
@@ -38,75 +34,12 @@ if (menuToggle && menu) {
     menu.hidden = !open;
     menu.classList.toggle('is-open', open);
     document.documentElement.style.overflow = open ? 'hidden' : '';
-    header?.classList.remove('is-hidden');
   };
   menuToggle.addEventListener('click', () => set(menu.hidden));
   menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => set(false)));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { set(false); menuToggle.focus(); } });
   window.matchMedia('(min-width: 1081px)').addEventListener('change', (m) => { if (m.matches) set(false); });
 }
-
-// Scroll reveals.
-const reveals = document.querySelectorAll<HTMLElement>('[data-reveal]');
-if (reduceMotion || !('IntersectionObserver' in window)) {
-  reveals.forEach((el) => el.classList.add('is-in'));
-} else {
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) { entry.target.classList.add('is-in'); io.unobserve(entry.target); }
-    });
-  }, { rootMargin: '0px 0px -10% 0px' });
-  reveals.forEach((el) => io.observe(el));
-}
-
-// Scroll-linked work: header state, mobile bar, parallax and the homepage circuit line.
-const parallax = reduceMotion ? [] : Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
-const circuit = document.querySelector<HTMLElement>('[data-circuit]');
-const circuitNodes = circuit ? Array.from(document.querySelectorAll<HTMLElement>('[data-circuit-node]')) : [];
-let ticking = false;
-
-function update() {
-  ticking = false;
-  const y = window.scrollY;
-  const vh = window.innerHeight;
-  const goingDown = y > lastY + 4;
-  const goingUp = y < lastY - 4;
-  const menuOpen = menuToggle?.getAttribute('aria-expanded') === 'true';
-
-  if (header) {
-    header.classList.toggle('is-scrolled', y > 4);
-    if (!menuOpen && !header.querySelector('.is-open')) {
-      if (goingDown && y > 480) header.classList.add('is-hidden');
-      else if (goingUp || y < 120) header.classList.remove('is-hidden');
-    }
-  }
-  if (bar) {
-    if (goingDown && y > 200) bar.classList.add('is-hidden');
-    else if (goingUp) bar.classList.remove('is-hidden');
-  }
-  if (goingDown || goingUp) lastY = y;
-
-  parallax.forEach((el) => {
-    const r = el.parentElement!.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > vh) return;
-    // capped so the image never moves further than its 6% overscan
-    const max = r.height * 0.05;
-    const offset = Math.max(-max, Math.min(max, (r.top + r.height / 2 - vh / 2) * parseFloat(el.dataset.parallax || '0')));
-    el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
-  });
-
-  if (circuit) {
-    const r = circuit.getBoundingClientRect();
-    const marker = vh * 0.55;
-    const progress = Math.min(1, Math.max(0, (marker - r.top) / r.height));
-    circuit.style.setProperty('--progress', reduceMotion ? '1' : progress.toFixed(4));
-    circuitNodes.forEach((n) => n.classList.toggle('is-live', reduceMotion || n.getBoundingClientRect().top < marker));
-  }
-}
-const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
-window.addEventListener('scroll', onScroll, { passive: true });
-window.addEventListener('resize', onScroll);
-update();
 
 // Conversion events: phone, email and CTA clicks.
 document.addEventListener('click', (e) => {

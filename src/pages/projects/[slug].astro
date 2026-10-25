@@ -59,7 +59,7 @@ const schema = [
   {images.length > 1 && (
     <section class="section--tight ground-paper">
       <div class="wrap gallery">
-        {images.slice(1).map((i) => <div data-reveal="clip"><Image src={i.img} alt={i.alt} widths={[600, 1000]} sizes="(max-width: 860px) 100vw, 50vw" loading="lazy" /></div>)}
+        {images.slice(1).map((i) => <div><Image src={i.img} alt={i.alt} widths={[600, 1000]} sizes="(max-width: 860px) 100vw, 50vw" loading="lazy" /></div>)}
       </div>
     </section>
   )}

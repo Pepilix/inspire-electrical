@@ -1,6 +1,5 @@
 ---
-// Phone-only contact bar pinned to the bottom of the screen. It hides while the
-// visitor scrolls down and returns when they scroll up, so it never covers reading for long.
+// Phone-only contact bar pinned to the bottom of the screen, always within thumb reach.
 import { company } from '../data/company';
 import { href } from '../lib/site';
 ---
@@ -11,8 +10,7 @@ import { href } from '../lib/site';
       Call
     </a>
   )}
-  <a href={href('/contact/?type=domestic')} data-track="cta_click" data-cta="mobile_bar_domestic">Home job</a>
-  <a href={href('/contact/?type=project')} class="mb-primary" data-track="cta_click" data-cta="mobile_bar_project">Project enquiry</a>
+  <a href={href('/contact/')} class="mb-primary" data-track="cta_click" data-cta="mobile_bar_quote">Get a quote</a>
 </div>
 
 <style>
@@ -26,14 +24,13 @@ import { href } from '../lib/site';
       border: 1px solid var(--rule-dark);
       transition: transform .45s var(--ease-out), opacity .3s;
     }
-    :global(.mobile-bar.is-hidden) { transform: translateY(calc(100% + 24px)); opacity: 0; }
     .mobile-bar a {
       flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
       min-height: 48px; padding: 0 10px;
       color: var(--on-dark); text-decoration: none; font-size: .9375rem; font-weight: 500;
       border: 1px solid var(--rule-dark);
     }
-    .mobile-bar .mb-primary { background: var(--brass); color: var(--charcoal); border-color: var(--brass); }
+    .mobile-bar .mb-primary { background: var(--white); color: var(--ink); border-color: var(--white); }
     .mobile-bar svg { width: 18px; height: 18px; }
     .mobile-bar .mb-call { flex: 0 0 auto; padding: 0 16px; }
   }

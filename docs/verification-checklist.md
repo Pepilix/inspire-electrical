@@ -1,6 +1,6 @@
 # Content verification checklist
 
-Nothing below has been confirmed yet. Each item is either blank on the site or shown as a dashed **TO VERIFY** marker on the preview build. Production builds hide the markers but cannot invent the missing facts, so fill these in before launch.
+Nothing below has been confirmed yet. Missing items are simply left off the site (set `SHOW_PLACEHOLDERS=true` locally to see where each would appear). Fill these in before launch.
 
 Edit business details in **`src/data/company.ts`**.
 
@@ -13,7 +13,7 @@ Edit business details in **`src/data/company.ts`**.
 | 3 | Form handler (Formspree, Basin or similar), with notification email set up and file uploads enabled | Both enquiry forms | env `PUBLIC_FORM_ENDPOINT` |
 | 4 | Competent person scheme name and registration number (NICEIC, NAPIT, ELECSA, Stroma...). **Do not assume one.** | Credentials, footer, about | `company.competentPersonScheme` |
 | 5 | Public liability insurance (cover level and insurer) | Credentials | `company.insurance` |
-| 6 | Registered company name and number, registered office | Footer, privacy notice, schema | `company.legalName`, `company.companyNumber` |
+| 6 | Registered company name and number, registered office. Care Home WiFi trades as Inspire Audio Visual Ltd (08332115); confirm whether Inspire Electrical does the same or is its own company | Footer, privacy notice, schema | `company.legalName`, `company.companyNumber` |
 | 7 | Privacy notice details: form processor, email provider, retention periods, review date | `/privacy/` | Edit `src/pages/privacy/index.astro` |
 
 ## Strongly recommended before launch

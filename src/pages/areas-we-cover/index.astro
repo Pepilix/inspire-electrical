@@ -27,7 +27,7 @@ const crumbs = [{ label: 'Areas', path: '/areas-we-cover/' }];
       <h2 class="h2 areas-h" id="main-title">Local pages</h2>
       <ul role="list" class="main-areas">
         {locations.map((l) => (
-          <li data-reveal>
+          <li>
             <a href={href(`/areas/${l.id}/`)}>
               <span class="ma-town">{l.data.town}</span>
               <span class="ma-lead">{l.data.lead}</span>

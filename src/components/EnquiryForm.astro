@@ -131,7 +131,7 @@ const enabled = Boolean(formEndpoint);
 
   <div class="submit-row">
     <button class="btn" type="submit" disabled={!enabled}>Send {kind === 'domestic' ? 'enquiry' : 'project enquiry'} <span class="arrow" aria-hidden="true"></span></button>
-    {!enabled && <p class="verify">Form handler not connected yet (set PUBLIC_FORM_ENDPOINT). This form cannot send.</p>}
+    {!enabled && <p class="form-note">Online enquiries are not switched on yet on this preview, so this form cannot send.</p>}
   </div>
   <p class="status" role="status" aria-live="polite" data-status></p>
 </form>
@@ -166,6 +166,7 @@ const enabled = Boolean(formEndpoint);
   .consent .err { grid-column: 2; }
   .submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
   .btn[disabled] { opacity: .5; cursor: not-allowed; }
+  .form-note { font-size: .875rem; color: var(--ink-3); }
   .status:empty { display: none; }
   .status { padding: 16px; border: 1px solid var(--rule-strong); background: var(--white); }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }

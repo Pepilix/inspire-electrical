@@ -32,7 +32,7 @@ const crumbs = [{ label: 'Services', path: '/services/' }];
         </div>
         <ol role="list" class="svc-list">
           {g.items.map((s) => (
-            <li class="svc-row" data-reveal>
+            <li class="svc-row">
               <a href={href(`/services/${s.id}/`)}>
                 <span class="svc-name">{s.data.navTitle}</span>
                 <span class="svc-sum">{s.data.summary}</span>

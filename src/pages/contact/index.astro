@@ -12,22 +12,22 @@ if (isProduction && !formEndpoint) {
   throw new Error('PRODUCTION build requires PUBLIC_FORM_ENDPOINT so the enquiry forms work. See docs/deployment.md.');
 }
 
-const title = 'Contact Inspire Electrical | Harrogate, York & Wetherby';
-const description = 'Send a domestic or project enquiry to Inspire Electrical, covering Harrogate, York, Wetherby and North Yorkshire. Photographs and drawings welcome.';
+const title = 'Get a Quote | Inspire Electrical, Harrogate & York';
+const description = 'Ask Inspire Electrical for a quote: domestic jobs, renovations, new builds and commercial work across North Yorkshire. Photographs and drawings welcome.';
 const crumbs = [{ label: 'Contact', path: '/contact/' }];
 ---
 <Base title={title} description={description} schema={[webPageSchema('/contact/', title, description, Astro.site), breadcrumbSchema(crumbs, Astro.site)]}>
-  <PageHeader eyebrow="Contact" title="Planning electrical work? Let’s talk." lead="Choose the form that fits. Both take a couple of minutes, and photographs or drawings help us give you a useful answer first time." crumbs={crumbs} />
+  <PageHeader eyebrow="Contact" title="Get a quote" lead="Tell us about the job. It takes a couple of minutes, and a photo of the area (or drawings for a project) helps us quote accurately." crumbs={crumbs} />
 
   <section class="section ground-paper">
     <div class="wrap contact-grid">
       <div class="forms">
         <div class="switch" role="tablist" aria-label="Enquiry type" data-switch>
           <button type="button" role="tab" id="tab-domestic" aria-controls="form-domestic" aria-selected="true" data-type="domestic">
-            <span class="mono">For your home</span><span class="sw-title">Domestic enquiry</span>
+            <span class="mono">Sockets, fuse boxes, rewires, lighting, testing</span><span class="sw-title">Home electrical work</span>
           </button>
           <button type="button" role="tab" id="tab-project" aria-controls="form-project" aria-selected="false" tabindex="-1" data-type="project">
-            <span class="mono">Builds, renovations, commercial</span><span class="sw-title">Project enquiry</span>
+            <span class="mono">Extensions, new builds, commercial</span><span class="sw-title">Project or business</span>
           </button>
         </div>
         <div id="form-domestic" role="tabpanel" aria-labelledby="tab-domestic" class="panel" data-panel="domestic">

@@ -17,7 +17,7 @@ const crumbs = [{ label: 'Advice', path: '/advice/' }];
     <div class="wrap">
       <ol role="list" class="articles">
         {articles.map((a) => (
-          <li data-reveal>
+          <li>
             <a href={href(`/advice/${a.id}/`)}>
               <span class="a-title">{a.data.title}</span>
               <span class="a-sum">{a.data.summary}</span>
