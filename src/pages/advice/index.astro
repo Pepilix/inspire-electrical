@@ -16,10 +16,9 @@ const crumbs = [{ label: 'Advice', path: '/advice/' }];
   <section class="section ground-paper">
     <div class="wrap">
       <ol role="list" class="articles">
-        {articles.map((a, i) => (
+        {articles.map((a) => (
           <li data-reveal>
             <a href={href(`/advice/${a.id}/`)}>
-              <span class="mono a-n">{String(i + 1).padStart(2, '0')}</span>
               <span class="a-title">{a.data.title}</span>
               <span class="a-sum">{a.data.summary}</span>
               <span class="arrow" aria-hidden="true"></span>
@@ -34,14 +33,13 @@ const crumbs = [{ label: 'Advice', path: '/advice/' }];
 
 <style>
   .articles { border-top: 1px solid var(--rule-strong); }
-  .articles a { display: grid; grid-template-columns: 3em minmax(0, 6fr) minmax(0, 5fr) 48px; gap: 24px; align-items: baseline; padding: 26px 0; border-bottom: 1px solid var(--rule); text-decoration: none; }
+  .articles a { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr) 48px; gap: 24px; align-items: baseline; padding: 26px 0; border-bottom: 1px solid var(--rule); text-decoration: none; }
   .a-n { color: var(--brass-ink); font-size: .75rem; }
   .a-title { font-family: var(--serif); font-size: clamp(1.5rem, 2.4vw, 2.125rem); font-weight: 500; line-height: 1.12; transition: color .3s; }
   .a-sum { color: var(--ink-2); font-size: .9375rem; }
   .articles a:hover .a-title { color: var(--brass-ink); }
   @media (max-width: 860px) {
-    .articles a { grid-template-columns: 2.4em 1fr; gap: 8px 12px; }
-    .a-sum { grid-column: 2; }
+    .articles a { grid-template-columns: 1fr; gap: 8px 12px; }
     .articles .arrow { display: none; }
   }
 </style>

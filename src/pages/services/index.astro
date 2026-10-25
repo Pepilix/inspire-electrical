@@ -18,7 +18,7 @@ const crumbs = [{ label: 'Services', path: '/services/' }];
 <Base title={title} description={description} schema={[webPageSchema('/services/', title, description, Astro.site), breadcrumbSchema(crumbs, Astro.site)]}>
   <PageHeader eyebrow="Services" title="Services" lead="Twelve services in two groups: work for homeowners, and design and installation for projects and commercial clients." crumbs={crumbs}>
     <div class="jump">
-      {groups.map((g) => <a href={`#${g.id}`}><span class="mono">{g.n}</span><span>{g.title}</span><span class="arrow" aria-hidden="true"></span></a>)}
+      {groups.map((g) => <a href={`#${g.id}`}><span>{g.title}</span><span class="arrow" aria-hidden="true"></span></a>)}
     </div>
   </PageHeader>
 
@@ -26,7 +26,7 @@ const crumbs = [{ label: 'Services', path: '/services/' }];
     <section class:list={['section', gi % 2 ? 'ground-white' : 'ground-paper']} id={g.id} aria-labelledby={`${g.id}-title`}>
       <div class="wrap">
         <div class="group-head">
-          <p class="eyebrow">{g.n} · Services</p>
+          <p class="eyebrow">Services</p>
           <h2 class="h2" id={`${g.id}-title`}>{g.title}</h2>
           <p class="lead">{g.intro}</p>
         </div>
@@ -34,7 +34,6 @@ const crumbs = [{ label: 'Services', path: '/services/' }];
           {g.items.map((s) => (
             <li class="svc-row" data-reveal>
               <a href={href(`/services/${s.id}/`)}>
-                <span class="svc-n mono">{String(s.data.order).padStart(2, '0')}</span>
                 <span class="svc-name">{s.data.navTitle}</span>
                 <span class="svc-sum">{s.data.summary}</span>
                 <span class="arrow" aria-hidden="true"></span>
@@ -51,15 +50,15 @@ const crumbs = [{ label: 'Services', path: '/services/' }];
 </Base>
 
 <style>
-  .jump { display: grid; gap: 0; border-top: 1px solid var(--rule-dark); }
-  .jump a { display: grid; grid-template-columns: 3em 1fr auto; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--rule-dark); text-decoration: none; font-family: var(--serif); font-size: 1.75rem; }
-  .jump .mono { color: var(--brass); font-size: .75rem; }
-  .jump .arrow { color: var(--brass); }
+  .jump { display: grid; gap: 0; border-top: 1px solid var(--rule-strong); }
+  .jump a { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--rule); text-decoration: none; font-family: var(--serif); font-size: 1.75rem; }
+  .jump .mono { color: var(--brass-ink); font-size: .75rem; }
+  .jump .arrow { color: var(--brass-ink); }
   .group-head { display: grid; gap: 18px; max-width: 760px; margin-bottom: 48px; }
   .svc-list { border-top: 1px solid var(--rule-strong); }
   .svc-row a {
     position: relative;
-    display: grid; grid-template-columns: 3em minmax(0, 4fr) minmax(0, 5fr) 48px; align-items: center; gap: 24px;
+    display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 5fr) 48px; align-items: center; gap: 24px;
     padding: 20px 0;
     border-bottom: 1px solid var(--rule);
     text-decoration: none;

@@ -5,9 +5,9 @@ interface Props { eyebrow: string; title: string; lead?: string; crumbs: Crumb[]
 const { eyebrow, title, lead, crumbs } = Astro.props;
 const hasAside = Astro.slots.has('default');
 ---
-<header class:list={['page-header ground-dark', { 'has-aside': hasAside }]}>
+<header class:list={['page-header ground-white', { 'has-aside': hasAside }]}>
   <div class="wrap">
-    <Breadcrumbs items={crumbs} dark />
+    <Breadcrumbs items={crumbs} />
     <div class="ph-grid">
       <div class="ph-copy">
         <p class="eyebrow">{eyebrow}</p>
@@ -21,7 +21,7 @@ const hasAside = Astro.slots.has('default');
 </header>
 
 <style>
-  .page-header { padding-top: 28px; padding-bottom: clamp(48px, 7vw, 96px); }
+  .page-header { padding-top: 28px; padding-bottom: clamp(48px, 7vw, 96px); border-bottom: 1px solid var(--rule); }
   .ph-grid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: end; margin-top: clamp(40px, 6vw, 80px); }
   .has-aside .ph-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
   .ph-title { margin-top: 20px; max-width: 16ch; }

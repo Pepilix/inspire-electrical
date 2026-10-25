@@ -1,57 +1,42 @@
 ---
-// Closing contact section, laid out like the contact block on trustinspire.com:
-// heading, a short line, and a ruled list of routes.
+// Closing contact section at the foot of most pages: the site's second dark band.
 import Verify from './Verify.astro';
 import { company } from '../data/company';
 import { href, showPlaceholders } from '../lib/site';
 
 interface Props { title?: string; text?: string; context?: string }
 const {
-  title = 'Contact',
+  title = 'Planning electrical work? Let’s talk.',
   text = 'Tell us what you need, from one extra socket to a full new-build installation, and we will come back to you.',
   context = 'band',
 } = Astro.props;
 ---
-<section class="cta ground-paper" aria-labelledby={`cta-${context}`}>
+<section class="cta ground-dark" aria-labelledby={`cta-${context}`}>
   <div class="wrap cta-grid">
-    <h2 class="h2" id={`cta-${context}`}>{title}</h2>
-    <div>
+    <h2 class="h2 cta-title" id={`cta-${context}`}>{title}</h2>
+    <div class="cta-body">
       <p class="cta-text">{text}</p>
-      <ul class="cta-list" role="list">
-        <li><a href={href('/contact/?type=domestic')} data-track="cta_click" data-cta={`${context}_domestic`}><span class="c-name">Domestic enquiry</span><span class="c-hint">For your home</span><span class="arrow" aria-hidden="true"></span></a></li>
-        <li><a href={href('/contact/?type=project')} data-track="cta_click" data-cta={`${context}_project`}><span class="c-name">Project enquiry</span><span class="c-hint">Builds, renovations, commercial</span><span class="arrow" aria-hidden="true"></span></a></li>
-        {company.phone && <li><a href={`tel:${company.phone.e164}`} data-track="phone_click"><span class="c-name">Call</span><span class="c-hint">{company.phone.display}</span><span class="arrow" aria-hidden="true"></span></a></li>}
-        {company.email && <li><a href={`mailto:${company.email}`} data-track="email_click"><span class="c-name">Email</span><span class="c-hint">{company.email}</span><span class="arrow" aria-hidden="true"></span></a></li>}
-      </ul>
-      {showPlaceholders && (!company.phone || !company.email) && <p class="cta-verify"><Verify label="Telephone and email" /></p>}
+      <div class="cta-actions">
+        <a class="btn btn--light" href={href('/contact/?type=domestic')} data-track="cta_click" data-cta={`${context}_domestic`}>Domestic enquiry</a>
+        <a class="btn" href={href('/contact/?type=project')} data-track="cta_click" data-cta={`${context}_project`}>Project enquiry</a>
+      </div>
+      {(company.phone || company.email || showPlaceholders) && (
+        <p class="cta-direct">
+          {company.phone ? <a href={`tel:${company.phone.e164}`} data-track="phone_click">{company.phone.display}</a> : <Verify label="Telephone" />}
+          {company.email ? <a href={`mailto:${company.email}`} data-track="email_click">{company.email}</a> : <Verify label="Email" />}
+        </p>
+      )}
     </div>
-    <p class="cta-area">Inspire Electrical<br>Harrogate, York, Wetherby<br>and North Yorkshire</p>
   </div>
 </section>
 
 <style>
-  .cta { padding-block: clamp(72px, 9vw, 120px); border-top: 1px solid var(--rule); }
-  .cta-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 3fr); gap: 32px clamp(32px, 5vw, 72px); }
-  .cta-text { color: var(--ink-2); margin-bottom: 20px; }
-  .cta-list { border-top: 1px solid var(--ink); }
-  .cta-list a {
-    display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px;
-    padding-block: 20px;
-    border-bottom: 1px solid var(--rule);
-    text-decoration: none;
-  }
-  .c-name { font-weight: 500; font-size: clamp(1.25rem, 2vw, 1.625rem); }
-  .c-hint { font-family: var(--mono); font-size: .8125rem; color: var(--ink-2); }
-  .cta-list .arrow { color: var(--brass-ink); }
-  .cta-verify { margin-top: 16px; }
-  .cta-area { color: var(--ink-2); line-height: 1.7; }
-  @media (max-width: 1080px) {
-    .cta-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
-    .cta-area { grid-column: 2; }
-  }
-  @media (max-width: 860px) {
-    .cta-grid { grid-template-columns: 1fr; }
-    .cta-area { grid-column: auto; }
-  }
-  @media (max-width: 420px) { .c-hint { display: none; } }
+  .cta { padding-block: clamp(64px, 9vw, 120px); }
+  .cta-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px clamp(40px, 7vw, 112px); align-items: end; }
+  .cta-title { font-size: clamp(2.25rem, 4.6vw, 4rem); max-width: 14ch; }
+  .cta-text { color: var(--on-dark-2); }
+  .cta-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+  .cta-direct { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 22px; font-size: 1.0625rem; }
+  .cta-direct a { color: var(--on-dark); text-underline-offset: 4px; }
+  @media (max-width: 860px) { .cta-grid { grid-template-columns: 1fr; } }
 </style>
