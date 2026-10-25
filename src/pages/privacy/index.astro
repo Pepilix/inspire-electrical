@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Verify from '../../components/Verify.astro';
+import { company } from '../../data/company';
+import { gtmId } from '../../lib/site';
+import { breadcrumbSchema, webPageSchema } from '../../lib/schema';
+
+const title = 'Privacy Notice | Inspire Electrical';
+const description = 'How Inspire Electrical uses the personal information you send through this website, how long it is kept, and your rights under UK data protection law.';
+const crumbs = [{ label: 'Privacy', path: '/privacy/' }];
+---
+<Base title={title} description={description} schema={[webPageSchema('/privacy/', title, description, Astro.site), breadcrumbSchema(crumbs, Astro.site)]}>
+  <PageHeader eyebrow="Privacy" title="Privacy notice" lead="How we use the information you send us through this website." crumbs={crumbs} />
+  <section class="section ground-paper">
+    <div class="wrap">
+      <div class="prose">
+        <p><Verify label="Have this notice reviewed before launch. Fill in the marked details." /></p>
+        <h2>Who we are</h2>
+        <p>{company.legalName ?? company.name} {company.companyNumber ? `(company number ${company.companyNumber})` : ''} is the data controller for information collected through this website. <Verify label="Registered company name, number and registered office" /></p>
+        <p>Contact for privacy questions: {company.email ? <a href={`mailto:${company.email}`}>{company.email}</a> : <Verify label="Privacy contact email" />}</p>
+
+        <h2>What we collect</h2>
+        <p>When you send an enquiry we collect the details you give us: your name, email address, telephone number, the location of the work, a description of the work, and any photographs, drawings or documents you attach.</p>
+        <p>We do not collect special category data and ask you not to include any in your enquiry.</p>
+
+        <h2>Why we use it, and the lawful basis</h2>
+        <ul>
+          <li>To reply to your enquiry, arrange visits and prepare quotations. The lawful basis is taking steps at your request before entering into a contract, and our legitimate interest in responding to enquiries.</li>
+          <li>If you become a customer, to carry out the work and keep the records the law and the wiring regulations require (for example, certificates). The lawful basis is contract and legal obligation.</li>
+        </ul>
+        <p>We do not sell your information or use it for unrelated marketing.</p>
+
+        <h2>Who processes it for us</h2>
+        <p>Enquiry forms are delivered by a form-handling service acting as our processor. <Verify label="Name of form service and where it stores data" /> Email is handled by <Verify label="Email provider" />.</p>
+
+        <h2>How long we keep it</h2>
+        <p><Verify label="Retention periods, e.g. enquiries that do not lead to work deleted after 12 months; customer records kept for 7 years" /></p>
+
+        <h2>Cookies and analytics</h2>
+        {gtmId
+          ? <p>We use analytics cookies only if you accept them in the cookie banner. They help us understand which pages people find useful. You can change your choice by clearing this site's data in your browser.</p>
+          : <p>This website does not currently set analytics or advertising cookies.</p>}
+
+        <h2>Your rights</h2>
+        <p>You have the right to ask for a copy of your information, to have it corrected or deleted, to restrict or object to how we use it, and to data portability. Contact us using the details above.</p>
+        <p>If you are unhappy with how we have handled your information, you can complain to the Information Commissioner's Office at <a href="https://ico.org.uk/make-a-complaint/">ico.org.uk</a>.</p>
+
+        <p class="updated mono">Last updated: <Verify label="Date reviewed" /></p>
+      </div>
+    </div>
+  </section>
+</Base>

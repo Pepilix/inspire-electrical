@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { href } from '../../lib/site';
+import { breadcrumbSchema, webPageSchema } from '../../lib/schema';
+import stair from '../../assets/group/cadogan-stair.jpg';
+import firstFix from '../../assets/group/yarm-first-fix.jpg';
+
+const projects = (await getCollection('projects', (p) => !p.data.draft)).sort((a, b) => +b.data.completed - +a.data.completed);
+const categories = ['Residential', 'Renovation', 'Lighting', 'Commercial', 'Infrastructure'] as const;
+const used = categories.filter((c) => projects.some((p) => p.data.type === c));
+const photos = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*.{jpg,jpeg,png,webp,avif}');
+const covers = await Promise.all(projects.map(async (p) => {
+  const src = p.data.images[0]?.src;
+  return src && photos[`/src/assets/${src}`] ? { img: (await photos[`/src/assets/${src}`]()).default, alt: p.data.images[0].alt } : null;
+}));
+
+const title = 'Electrical Projects | Inspire Electrical';
+const description = 'Electrical installation projects by Inspire Electrical across Harrogate, York and North Yorkshire: residential, renovation, lighting and commercial work.';
+const crumbs = [{ label: 'Projects', path: '/projects/' }];
+---
+<Base title={title} description={description} schema={[webPageSchema('/projects/', title, description, Astro.site), breadcrumbSchema(crumbs, Astro.site)]}>
+  <PageHeader eyebrow="Projects" title="Project work" lead={projects.length ? 'Recent installations, with the brief, the scope and how the work was delivered.' : 'Inspire Electrical is a new business. Its own case studies will be published here as projects complete, each with the brief, scope, challenges and photographs.'} crumbs={crumbs} />
+
+  {projects.length > 0 ? (
+    <section class="section ground-paper">
+      <div class="wrap">
+        {used.length > 1 && (
+          <div class="filters" role="group" aria-label="Filter projects" data-filters>
+            <button type="button" aria-pressed="true" data-filter="all">All</button>
+            {used.map((c) => <button type="button" aria-pressed="false" data-filter={c}>{c}</button>)}
+          </div>
+        )}
+        <ul role="list" class="projects" data-projects>
+          {projects.map((p, i) => (
+            <li data-type={p.data.type} data-reveal>
+              <a href={href(`/projects/${p.id}/`)}>
+                <span class="p-media">{covers[i] ? <Image src={covers[i]!.img} alt={covers[i]!.alt} widths={[480, 800]} sizes="(max-width: 860px) 100vw, 45vw" loading="lazy" /> : null}</span>
+                <span class="mono p-meta">{p.data.type} · {p.data.location}</span>
+                <span class="p-title">{p.data.title}</span>
+                <span class="arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ) : (
+    <section class="section ground-paper">
+      <div class="wrap empty">
+        <div>
+          <p class="eyebrow">Coming next</p>
+          <h2 class="h2 empty-h">What each case study will include</h2>
+          <dl class="schedule empty-schedule">
+            <div><dt>Location</dt><dd>Town or area, and the type of property</dd></div>
+            <div><dt>Brief</dt><dd>What the client needed and why</dd></div>
+            <div><dt>Scope</dt><dd>The electrical work carried out</dd></div>
+            <div><dt>Challenges</dt><dd>What made it difficult</dd></div>
+            <div><dt>Solution</dt><dd>How it was designed and delivered</dd></div>
+            <div><dt>Record</dt><dd>Photographs from first fix to handover</dd></div>
+          </dl>
+        </div>
+        <div class="group">
+          <p class="eyebrow">Meanwhile, from the group</p>
+          <p class="group-text">Lighting control and infrastructure work by Inspire Audio Visual. These are Inspire AV projects, shown here as group experience.</p>
+          <div class="group-pics">
+            <a href="https://www.inspire-av.com/project/london-lutron-and-sonos-installation/" class="gp">
+              <Image src={stair} alt="Staircase with LED step lights at Cadogan Place" widths={[400, 700]} sizes="(max-width: 860px) 50vw, 22vw" loading="lazy" />
+              <span class="mono">Cadogan Place · Lutron lighting</span>
+            </a>
+            <a href="https://www.inspire-av.com/project/yarm-home-cinema/" class="gp">
+              <Image src={firstFix} alt="Cinema room at first fix with roof trusses and stud framing" widths={[400, 700]} sizes="(max-width: 860px) 50vw, 22vw" loading="lazy" />
+              <span class="mono">Yarm · cinema room at first fix</span>
+            </a>
+          </div>
+          <a class="text-link" href="https://www.inspire-av.com/portfolio/"><span>Inspire Audio Visual portfolio</span><span class="arrow" aria-hidden="true"></span></a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand context="projects" title="Have a project in mind?" text="Send us drawings or a description. We will come back with questions, a conversation and, when you are ready, a quotation." />
+</Base>
+
+<style>
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+  .filters button { padding: 9px 16px; border: 1px solid var(--rule-strong); background: none; cursor: pointer; font-size: .9375rem; }
+  .filters button[aria-pressed='true'] { background: var(--charcoal); color: var(--on-dark); }
+  .projects { display: grid; grid-template-columns: 1fr 1fr; gap: 56px 40px; }
+  .projects li[hidden] { display: none; }
+  .projects a { display: grid; gap: 10px; text-decoration: none; }
+  .p-media { aspect-ratio: 4 / 3; overflow: hidden; background: var(--paper-2); }
+  .p-media :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease-out); }
+  .projects a:hover :global(img) { transform: scale(1.04); }
+  .p-meta { color: var(--copper-ink); font-size: .75rem; margin-top: 8px; }
+  .p-title { font-family: var(--serif); font-size: 2rem; line-height: 1.1; }
+  .empty { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 56px clamp(40px, 7vw, 112px); }
+  .empty-h { margin: 16px 0 32px; }
+  .group-text { margin: 16px 0 24px; color: var(--ink-2); }
+  .group-pics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .gp { display: grid; gap: 8px; text-decoration: none; }
+  .gp :global(img) { aspect-ratio: 4 / 5; object-fit: cover; width: 100%; }
+  .gp .mono { font-size: .6875rem; color: var(--ink-3); }
+  @media (max-width: 860px) {
+    .projects, .empty { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-filters]').forEach((bar) => {
+    const items = Array.from(document.querySelectorAll<HTMLElement>('[data-projects] > li'));
+    const buttons = Array.from(bar.querySelectorAll<HTMLButtonElement>('button'));
+    buttons.forEach((b) => b.addEventListener('click', () => {
+      const f = b.dataset.filter!;
+      buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      items.forEach((li) => { li.hidden = f !== 'all' && li.dataset.type !== f; });
+    }));
+  });
+</script>

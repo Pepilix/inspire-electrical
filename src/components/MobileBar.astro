@@ -1,0 +1,40 @@
+---
+// Phone-only contact bar pinned to the bottom of the screen. It hides while the
+// visitor scrolls down and returns when they scroll up, so it never covers reading for long.
+import { company } from '../data/company';
+import { href } from '../lib/site';
+---
+<div class="mobile-bar" data-mobile-bar>
+  {company.phone && (
+    <a href={`tel:${company.phone.e164}`} class="mb-call" data-track="phone_click">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      Call
+    </a>
+  )}
+  <a href={href('/contact/?type=domestic')} data-track="cta_click" data-cta="mobile_bar_domestic">Home job</a>
+  <a href={href('/contact/?type=project')} class="mb-primary" data-track="cta_click" data-cta="mobile_bar_project">Project enquiry</a>
+</div>
+
+<style>
+  .mobile-bar { display: none; }
+  @media (max-width: 600px) {
+    .mobile-bar {
+      position: fixed; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); z-index: 90;
+      display: flex; gap: 6px; padding: 6px;
+      background: rgba(35, 31, 32, .94);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--rule-dark);
+      transition: transform .45s var(--ease-out), opacity .3s;
+    }
+    :global(.mobile-bar.is-hidden) { transform: translateY(calc(100% + 24px)); opacity: 0; }
+    .mobile-bar a {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 48px; padding: 0 10px;
+      color: var(--on-dark); text-decoration: none; font-size: .9375rem; font-weight: 500;
+      border: 1px solid var(--rule-dark);
+    }
+    .mobile-bar .mb-primary { background: var(--copper); color: var(--charcoal); border-color: var(--copper); }
+    .mobile-bar svg { width: 18px; height: 18px; }
+    .mobile-bar .mb-call { flex: 0 0 auto; padding: 0 16px; }
+  }
+</style>

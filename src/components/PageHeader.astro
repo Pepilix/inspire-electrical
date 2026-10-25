@@ -1,0 +1,40 @@
+---
+import Breadcrumbs, { type Crumb } from './Breadcrumbs.astro';
+
+interface Props { eyebrow: string; title: string; lead?: string; crumbs: Crumb[] }
+const { eyebrow, title, lead, crumbs } = Astro.props;
+const hasAside = Astro.slots.has('default');
+---
+<header class:list={['page-header ground-dark', { 'has-aside': hasAside }]}>
+  <div class="wrap">
+    <Breadcrumbs items={crumbs} dark />
+    <div class="ph-grid">
+      <div class="ph-copy">
+        <p class="eyebrow">{eyebrow}</p>
+        <h1 class="h1 ph-title"><span class="ph-line">{title}</span></h1>
+        {lead && <p class="lead ph-lead">{lead}</p>}
+        <slot name="actions" />
+      </div>
+      {hasAside && <div class="ph-aside"><slot /></div>}
+    </div>
+  </div>
+</header>
+
+<style>
+  .page-header { padding-top: 28px; padding-bottom: clamp(48px, 7vw, 96px); }
+  .ph-grid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: end; margin-top: clamp(40px, 6vw, 80px); }
+  .has-aside .ph-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+  .ph-title { margin-top: 20px; max-width: 16ch; }
+  .ph-line { display: block; }
+  .ph-lead { margin-top: 24px; }
+  .ph-copy :global(.ph-actions) { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .ph-aside { align-self: stretch; }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .ph-title { animation: ph-in 1s var(--ease-out) both; }
+    :global(.js) .ph-lead { animation: ph-in 1s var(--ease-out) .1s both; }
+  }
+  @keyframes ph-in { from { opacity: 0; transform: translateY(24px); } }
+  @media (max-width: 960px) {
+    .has-aside .ph-grid { grid-template-columns: 1fr; }
+  }
+</style>

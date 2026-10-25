@@ -1,0 +1,9 @@
+---
+// Marks a business detail that has not been verified yet.
+// Shown on preview builds so gaps are obvious; renders nothing on the production build.
+import { showPlaceholders } from '../lib/site';
+
+interface Props { label: string; block?: boolean }
+const { label, block = false } = Astro.props;
+---
+{showPlaceholders && (block ? <p class="verify">{label}</p> : <span class="verify">{label}</span>)}

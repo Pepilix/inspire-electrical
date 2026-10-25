@@ -1,0 +1,56 @@
+---
+// Question and answer list using native <details>, so it works without JavaScript.
+// FAQPage structured data is deliberately not emitted (see docs/strategy.md).
+interface Props { items: { q: string; a: string }[]; title?: string; id?: string }
+import { baseHtml } from '../lib/site';
+const { items, title = 'Questions we are often asked', id = 'faqs' } = Astro.props;
+---
+<section class="faqs" aria-labelledby={id}>
+  <div class="faqs-head">
+    <p class="eyebrow">FAQs</p>
+    <h2 class="h2" id={id}>{title}</h2>
+  </div>
+  <div class="faq-list">
+    {items.map((f, i) => (
+      <details class="faq" name={id}>
+        <summary>
+          <span class="faq-n mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <span class="faq-q">{f.q}</span>
+          <span class="faq-icon" aria-hidden="true"></span>
+        </summary>
+        <div class="faq-a"><p set:html={baseHtml(f.a)} /></div>
+      </details>
+    ))}
+  </div>
+</section>
+
+<style>
+  .faqs { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 40px clamp(40px, 7vw, 112px); }
+  .faqs-head .h2 { margin-top: 18px; }
+  .faq-list { border-top: 1px solid var(--rule-strong); }
+  .faq { border-bottom: 1px solid var(--rule); }
+  summary {
+    display: grid; grid-template-columns: 2.6em 1fr 20px; align-items: baseline; gap: 12px;
+    padding: 22px 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  .faq-n { color: var(--copper-ink); font-size: .75rem; }
+  .faq-q { font-size: 1.125rem; font-weight: 500; line-height: 1.4; }
+  .faq-icon { position: relative; width: 14px; height: 14px; align-self: center; }
+  .faq-icon::before, .faq-icon::after { content: ''; position: absolute; left: 0; top: 50%; width: 14px; height: 1px; background: currentColor; transition: transform .35s var(--ease-out); }
+  .faq-icon::after { transform: rotate(90deg); }
+  .faq[open] .faq-icon::after { transform: rotate(0); }
+  summary:hover .faq-q { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  .faq-a { padding: 0 32px 26px 2.6em; margin-left: 12px; color: var(--ink-2); max-width: 44em; }
+  .faq-a :global(a) { color: var(--copper-ink); }
+  @media (prefers-reduced-motion: no-preference) {
+    .faq[open] .faq-a { animation: faq-in .5s var(--ease-out); }
+  }
+  @keyframes faq-in { from { opacity: 0; transform: translateY(-6px); } }
+  @media (max-width: 860px) {
+    .faqs { grid-template-columns: 1fr; }
+    .faq-a { padding-left: 0; margin-left: 0; padding-right: 0; }
+  }
+</style>

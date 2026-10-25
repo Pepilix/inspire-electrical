@@ -1,0 +1,86 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CoverageMap from '../../components/CoverageMap.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { href } from '../../lib/site';
+import { breadcrumbSchema, webPageSchema } from '../../lib/schema';
+import { towns } from '../../data/areas';
+
+const locations = (await getCollection('locations')).sort((a, b) => a.data.order - b.data.order);
+const secondary = towns.filter((t) => !t.priority);
+const title = 'Areas We Cover | Inspire Electrical, North Yorkshire';
+const description = 'Inspire Electrical covers Harrogate, York and Wetherby, plus Knaresborough, Ripon, Boroughbridge, Tadcaster, Thirsk and the villages between.';
+const crumbs = [{ label: 'Areas', path: '/areas-we-cover/' }];
+---
+<Base title={title} description={description} schema={[webPageSchema('/areas-we-cover/', title, description, Astro.site), breadcrumbSchema(crumbs, Astro.site)]}>
+  <PageHeader eyebrow="Areas we cover" title="Harrogate, York, Wetherby and North Yorkshire." lead="Three main areas, the towns around them and the villages between. Select a town for local information." crumbs={crumbs} />
+
+  <section class="section ground-paper">
+    <div class="wrap"><CoverageMap /></div>
+  </section>
+
+  <section class="section ground-white" aria-labelledby="main-title">
+    <div class="wrap">
+      <p class="eyebrow">Main areas</p>
+      <h2 class="h2 areas-h" id="main-title">Local pages</h2>
+      <ul role="list" class="main-areas">
+        {locations.map((l) => (
+          <li data-reveal>
+            <a href={href(`/areas/${l.id}/`)}>
+              <span class="ma-town">{l.data.town}</span>
+              <span class="ma-lead">{l.data.lead}</span>
+              <span class="mono ma-near">{l.data.nearby.slice(0, 5).join(' · ')}</span>
+              <span class="arrow" aria-hidden="true"></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section ground-paper" aria-labelledby="also-title">
+    <div class="wrap">
+      <p class="eyebrow">Also covering</p>
+      <h2 class="h2 areas-h" id="also-title">Towns around the triangle</h2>
+      <div class="secondary">
+        {secondary.map((t) => {
+          const near = locations.find((l) => l.id === t.near);
+          return (
+            <section class="town" id={t.id} aria-labelledby={`${t.id}-h`}>
+              <h3 class="h3" id={`${t.id}-h`}>{t.name}</h3>
+              <p>{t.note}</p>
+              {near && <p><a class="text-link" href={href(`/areas/${near.id}/`)}><span>Nearest local page: {near.data.town}</span><span class="arrow" aria-hidden="true"></span></a></p>}
+            </section>
+          );
+        })}
+      </div>
+      <p class="secondary-note">We do not have offices in these towns. The Inspire group studio is at Thorp Arch, near Wetherby, and we travel to you.</p>
+    </div>
+  </section>
+
+  <CtaBand context="areas" />
+</Base>
+
+<style>
+  .areas-h { margin: 16px 0 40px; }
+  .main-areas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--rule-strong); }
+  .main-areas a { position: relative; display: grid; gap: 12px; align-content: start; height: 100%; padding: 28px 28px 64px 0; border-bottom: 1px solid var(--rule); text-decoration: none; }
+  .main-areas li + li a { padding-left: 28px; border-left: 1px solid var(--rule); }
+  .ma-town { font-family: var(--serif); font-size: clamp(2.25rem, 3.6vw, 3.25rem); line-height: 1; }
+  .ma-lead { color: var(--ink-2); }
+  .ma-near { color: var(--ink-3); font-size: .75rem; }
+  .main-areas .arrow { position: absolute; bottom: 28px; }
+  .main-areas a:hover .ma-town { color: var(--copper-ink); }
+  .secondary { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0; border-top: 1px solid var(--rule-strong); }
+  .town { padding: 24px 24px 28px 0; border-bottom: 1px solid var(--rule); scroll-margin-top: calc(var(--header-h) + 24px); }
+  .town p { margin-top: 10px; color: var(--ink-2); font-size: .9375rem; }
+  .town .text-link { color: var(--ink); font-size: .9375rem; }
+  .town:target { background: linear-gradient(90deg, rgba(154, 79, 40, .08), transparent); }
+  .secondary-note { margin-top: 28px; color: var(--ink-3); font-size: .9375rem; }
+  @media (max-width: 860px) {
+    .main-areas { grid-template-columns: 1fr; }
+    .main-areas li + li a { padding-left: 0; border-left: 0; }
+  }
+</style>

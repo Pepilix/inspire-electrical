@@ -1,0 +1,236 @@
+---
+/**
+ * Enquiry form. Posts to PUBLIC_FORM_ENDPOINT (a form handler such as Formspree or Basin).
+ * - No endpoint configured: the form renders but cannot be submitted, and the preview build says why.
+ *   The production build refuses to complete without one (see src/pages/contact/index.astro).
+ * - Spam: honeypot field plus a minimum fill time, checked before sending.
+ * - Without JavaScript the browser posts the form directly to the handler.
+ */
+import { getCollection } from 'astro:content';
+import { formEndpoint, href, absolute } from '../lib/site';
+
+interface Props { kind: 'domestic' | 'project'; preselect?: string }
+const { kind } = Astro.props;
+const services = (await getCollection('services')).filter((s) => s.data.group === 'domestic').sort((a, b) => a.data.order - b.data.order);
+const id = (f: string) => `${kind}-${f}`;
+const thanks = absolute(`/thank-you/?type=${kind}`, Astro.site);
+const enabled = Boolean(formEndpoint);
+---
+<form
+  class="form"
+  method="post"
+  action={enabled ? formEndpoint : undefined}
+  enctype="multipart/form-data"
+  novalidate
+  data-form={kind}
+  data-enabled={enabled ? 'true' : 'false'}
+  data-thanks={href(`/thank-you/?type=${kind}`)}
+>
+  <input type="hidden" name="form_type" value={kind === 'domestic' ? 'Domestic enquiry' : 'Project enquiry'}>
+  <input type="hidden" name="_subject" value={kind === 'domestic' ? 'New domestic enquiry: Inspire Electrical' : 'New project enquiry: Inspire Electrical'}>
+  <input type="hidden" name="_next" value={thanks}>
+  <input type="hidden" name="started_at" value="" data-started>
+  <div class="hp" aria-hidden="true">
+    <label for={id('website')}>Leave this empty</label>
+    <input type="text" id={id('website')} name="_gotcha" tabindex="-1" autocomplete="off">
+  </div>
+
+  <fieldset>
+    <legend class="mono">01 · Your details</legend>
+    <div class="row row--2">
+      <div class="field">
+        <label for={id('name')}>Name</label>
+        <input id={id('name')} name="name" type="text" autocomplete="name" required aria-describedby={`${id('name')}-err`}>
+        <p class="err" id={`${id('name')}-err`} hidden>Please tell us your name.</p>
+      </div>
+      {kind === 'project' && (
+        <div class="field">
+          <label for={id('company')}>Company or role <span class="opt">optional</span></label>
+          <input id={id('company')} name="company" type="text" autocomplete="organization" placeholder="e.g. architect, builder, homeowner">
+        </div>
+      )}
+      <div class="field">
+        <label for={id('email')}>Email</label>
+        <input id={id('email')} name="email" type="email" autocomplete="email" required aria-describedby={`${id('email')}-err`}>
+        <p class="err" id={`${id('email')}-err`} hidden>Please enter a valid email address.</p>
+      </div>
+      <div class="field">
+        <label for={id('phone')}>Telephone</label>
+        <input id={id('phone')} name="phone" type="tel" autocomplete="tel" inputmode="tel" required pattern="[0-9 +()\-]{10,}" aria-describedby={`${id('phone')}-err`}>
+        <p class="err" id={`${id('phone')}-err`} hidden>Please enter a phone number we can call you on.</p>
+      </div>
+      <div class="field">
+        <label for={id('location')}>{kind === 'domestic' ? 'Postcode or town' : 'Project location'}</label>
+        <input id={id('location')} name="location" type="text" autocomplete={kind === 'domestic' ? 'postal-code' : 'off'} required aria-describedby={`${id('location')}-err`}>
+        <p class="err" id={`${id('location')}-err`} hidden>Please tell us where the work is.</p>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend class="mono">02 · {kind === 'domestic' ? 'The work' : 'The project'}</legend>
+    <div class="row row--2">
+      {kind === 'domestic' ? (
+        <div class="field field--wide">
+          <label for={id('work')}>Type of work</label>
+          <select id={id('work')} name="work_type" required aria-describedby={`${id('work')}-err`} data-preselect>
+            <option value="">Choose one</option>
+            {services.map((s) => <option value={s.data.navTitle} data-service={s.id}>{s.data.navTitle}</option>)}
+            <option value="Something else">Something else</option>
+          </select>
+          <p class="err" id={`${id('work')}-err`} hidden>Please choose the closest match.</p>
+        </div>
+      ) : (
+        <>
+          <div class="field">
+            <label for={id('ptype')}>Project type</label>
+            <select id={id('ptype')} name="project_type" required aria-describedby={`${id('ptype')}-err`} data-preselect>
+              <option value="">Choose one</option>
+              <option data-service="new-build-electrical-installation">New build</option>
+              <option>Renovation or extension</option>
+              <option data-service="commercial-electrical commercial-lighting electrical-maintenance">Commercial installation</option>
+              <option data-service="electrical-design">Electrical design</option>
+              <option data-service="lighting-installation outdoor-lighting">Architectural or garden lighting</option>
+              <option>Something else</option>
+            </select>
+            <p class="err" id={`${id('ptype')}-err`} hidden>Please choose the closest match.</p>
+          </div>
+          <div class="field">
+            <label for={id('timescale')}>Approximate timescale</label>
+            <select id={id('timescale')} name="timescale">
+              <option>Not sure yet</option>
+              <option>Design stage</option>
+              <option>Starting within 3 months</option>
+              <option>Starting in 3 to 6 months</option>
+              <option>Starting in 6 months or more</option>
+              <option>Already on site</option>
+            </select>
+          </div>
+        </>
+      )}
+      <div class="field field--wide">
+        <label for={id('desc')}>{kind === 'domestic' ? 'Brief description' : 'Scope of work'}</label>
+        <textarea id={id('desc')} name="description" rows="5" required minlength="10" aria-describedby={`${id('desc')}-hint ${id('desc')}-err`}></textarea>
+        <p class="hint" id={`${id('desc')}-hint`}>{kind === 'domestic' ? 'What you need, and anything we should know about the property.' : 'What is included, what stage the design is at, and who else is involved.'}</p>
+        <p class="err" id={`${id('desc')}-err`} hidden>Please add a few words about the work.</p>
+      </div>
+      <div class="field field--wide">
+        <label for={id('files')}>{kind === 'domestic' ? 'Photographs' : 'Drawings or specifications'} <span class="opt">optional</span></label>
+        <input id={id('files')} name="attachment" type="file" multiple accept={kind === 'domestic' ? 'image/*' : 'image/*,.pdf,.dwg,.dxf'} aria-describedby={`${id('files')}-hint ${id('files')}-err`} data-max-mb="10">
+        <p class="hint" id={`${id('files')}-hint`}>{kind === 'domestic' ? 'A photo of your consumer unit and the area of work helps. Up to 10 MB in total.' : 'PDF, DWG, DXF or images. Up to 10 MB in total; larger sets can be sent by link once we are in touch.'}</p>
+        <p class="err" id={`${id('files')}-err`} hidden>Those files are larger than 10 MB in total.</p>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="consent">
+    <input type="checkbox" id={id('consent')} name="privacy_consent" value="yes" required aria-describedby={`${id('consent')}-err`}>
+    <label for={id('consent')}>I am happy for Inspire Electrical to use these details to reply to my enquiry, as described in the <a href={href('/privacy/')}>privacy notice</a>.</label>
+    <p class="err" id={`${id('consent')}-err`} hidden>Please confirm so we can reply.</p>
+  </div>
+
+  <div class="submit-row">
+    <button class="btn" type="submit" disabled={!enabled}>Send {kind === 'domestic' ? 'enquiry' : 'project enquiry'} <span class="arrow" aria-hidden="true"></span></button>
+    {!enabled && <p class="verify">Form handler not connected yet (set PUBLIC_FORM_ENDPOINT). This form cannot send.</p>}
+  </div>
+  <p class="status" role="status" aria-live="polite" data-status></p>
+</form>
+
+<style>
+  .form { display: grid; gap: 36px; }
+  fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+  legend { padding: 0; margin-bottom: 18px; color: var(--copper-ink); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; }
+  .row { display: grid; gap: 20px; }
+  .row--2 { grid-template-columns: 1fr 1fr; }
+  .field { display: grid; gap: 7px; align-content: start; }
+  .field--wide { grid-column: 1 / -1; }
+  label { font-weight: 500; font-size: .9375rem; }
+  .opt { font-family: var(--mono); font-weight: 400; font-size: .6875rem; color: var(--ink-3); margin-left: 6px; }
+  input:not([type='checkbox']), select, textarea {
+    width: 100%; min-height: 50px; padding: 12px 14px;
+    border: 1px solid var(--rule-strong); border-radius: 0;
+    background: var(--white);
+    font-size: 1rem;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  textarea { resize: vertical; }
+  input[type='file'] { padding: 10px; background: transparent; border-style: dashed; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--copper-ink); box-shadow: 0 0 0 3px rgba(154, 79, 40, .18); }
+  [aria-invalid='true'] { border-color: #a12c1f !important; }
+  .hint { font-size: .8125rem; color: var(--ink-3); }
+  .err { font-size: .8125rem; color: #a12c1f; font-weight: 500; }
+  .consent { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; }
+  .consent input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--copper-ink); }
+  .consent label { font-weight: 400; color: var(--ink-2); }
+  .consent label a { color: var(--copper-ink); }
+  .consent .err { grid-column: 2; }
+  .submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .btn[disabled] { opacity: .5; cursor: not-allowed; }
+  .status:empty { display: none; }
+  .status { padding: 16px; border: 1px solid var(--rule-strong); background: var(--white); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  @media (max-width: 640px) { .row--2 { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  import { track } from '../scripts/main';
+
+  document.querySelectorAll<HTMLFormElement>('[data-form]').forEach((form) => {
+    const started = form.querySelector<HTMLInputElement>('[data-started]')!;
+    started.value = String(Date.now());
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const kind = form.dataset.form!;
+
+    // Preselect from ?service=
+    const service = new URLSearchParams(location.search).get('service');
+    const select = form.querySelector<HTMLSelectElement>('[data-preselect]');
+    if (service && select) {
+      const opt = Array.from(select.options).find((o) => (o.dataset.service || '').split(' ').includes(service));
+      if (opt) select.value = opt.value || opt.text;
+    }
+
+    const fields = Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input:not([type=hidden]):not([name=_gotcha]), select, textarea'));
+    const errFor = (el: Element) => form.querySelector<HTMLElement>(`#${el.id}-err`);
+    const check = (el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
+      let ok = el.checkValidity();
+      if (ok && el instanceof HTMLInputElement && el.type === 'file') {
+        const total = Array.from(el.files || []).reduce((a, f) => a + f.size, 0);
+        ok = total <= Number(el.dataset.maxMb || 10) * 1024 * 1024;
+      }
+      el.setAttribute('aria-invalid', String(!ok));
+      const err = errFor(el);
+      if (err) err.hidden = ok;
+      return ok;
+    };
+    fields.forEach((el) => {
+      el.addEventListener('blur', () => { if (el.value || el.getAttribute('aria-invalid')) check(el); });
+      el.addEventListener('change', () => check(el));
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (form.dataset.enabled !== 'true') return;
+      const invalid = fields.filter((el) => !check(el));
+      if (invalid.length) { invalid[0].focus(); return; }
+
+      const data = new FormData(form);
+      // Spam checks: honeypot filled, or submitted implausibly fast
+      if (data.get('_gotcha') || Date.now() - Number(started.value) < 3000) {
+        status.textContent = 'Thank you. Your enquiry has been sent.';
+        return;
+      }
+      const button = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+      button.disabled = true;
+      status.textContent = 'Sending…';
+      try {
+        const res = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(String(res.status));
+        track('form_submit', { form_type: kind });
+        window.location.href = form.dataset.thanks!;
+      } catch {
+        button.disabled = false;
+        status.textContent = 'Sorry, the form could not be sent. Please try again, or contact us by phone or email.';
+      }
+    });
+  });
+</script>

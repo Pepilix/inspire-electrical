@@ -1,0 +1,47 @@
+---
+// Analytics consent. Rendered only when a GTM container ID is configured.
+// Google Consent Mode v2 defaults everything to "denied"; GTM loads only after the visitor accepts.
+import { gtmId } from '../lib/site';
+import { href } from '../lib/site';
+---
+{gtmId && (
+  <>
+    <script is:inline define:vars={{ gtmId }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){ dataLayer.push(arguments); }
+      gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', wait_for_update: 500 });
+      window.__loadGtm = function () {
+        if (window.__gtmLoaded) return; window.__gtmLoaded = true;
+        dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+        var s = document.createElement('script'); s.async = true; s.src = 'https://www.googletagmanager.com/gtm.js?id=' + gtmId;
+        document.head.appendChild(s);
+      };
+      try {
+        if (localStorage.getItem('ie-consent') === 'granted') {
+          gtag('consent', 'update', { analytics_storage: 'granted' });
+          window.__loadGtm();
+        }
+      } catch (e) {}
+    </script>
+    <div class="consent ground-dark" data-consent hidden role="region" aria-label="Cookie preferences">
+      <p>We would like to use analytics cookies to understand which pages help people find us. They are off unless you accept. <a href={href('/privacy/')}>Privacy notice</a></p>
+      <div class="consent-actions">
+        <button type="button" class="btn btn--ghost" data-consent-choice="denied">Reject</button>
+        <button type="button" class="btn" data-consent-choice="granted">Accept analytics</button>
+      </div>
+    </div>
+  </>
+)}
+
+<style>
+  .consent {
+    position: fixed; left: 16px; bottom: 16px; z-index: 150;
+    max-width: 440px; padding: 22px;
+    border: 1px solid var(--rule-dark);
+    font-size: .9375rem;
+  }
+  .consent a { color: var(--copper); }
+  .consent-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .consent .btn { min-height: 44px; padding: 10px 18px; font-size: .9375rem; }
+  @media (max-width: 600px) { .consent { right: 16px; bottom: 84px; } }
+</style>

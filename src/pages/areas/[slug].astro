@@ -1,0 +1,130 @@
+---
+import { getCollection, getEntries, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CoverageMap from '../../components/CoverageMap.astro';
+import Faqs from '../../components/Faqs.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { href, absolute } from '../../lib/site';
+import { breadcrumbSchema, webPageSchema, businessRef } from '../../lib/schema';
+import { towns } from '../../data/areas';
+
+export async function getStaticPaths() {
+  const locations = await getCollection('locations');
+  return locations.map((l) => ({ params: { slug: l.id }, props: { location: l } }));
+}
+
+const { location } = Astro.props;
+const d = location.data;
+const { Content } = await render(location);
+const services = await getEntries(d.services);
+const advice = await getEntries(d.advice);
+const others = (await getCollection('locations')).filter((l) => l.id !== location.id).sort((a, b) => a.data.order - b.data.order);
+const secondary = towns.filter((t) => t.near === location.id);
+
+const path = `/areas/${location.id}/`;
+const crumbs = [{ label: 'Areas', path: '/areas-we-cover/' }, { label: d.town, path }];
+const schema = [
+  webPageSchema(path, d.seoTitle, d.description, Astro.site),
+  breadcrumbSchema(crumbs, Astro.site),
+  {
+    '@type': 'Service',
+    '@id': `${absolute(path, Astro.site)}#service`,
+    name: `Electrical services in ${d.town}`,
+    serviceType: 'Electrical installation, testing and maintenance',
+    provider: businessRef(Astro.site),
+    areaServed: { '@type': 'City', name: d.town, geo: { '@type': 'GeoCoordinates', latitude: d.lat, longitude: d.lng } },
+  },
+];
+---
+<Base title={d.seoTitle} description={d.description} schema={schema}>
+  <PageHeader eyebrow={`Areas · ${d.town}`} title={`Electricians in ${d.town}`} lead={d.lead} crumbs={crumbs}>
+    <div class="ph-actions" slot="actions">
+      <a class="btn" href={href('/contact/?type=domestic')} data-track="cta_click" data-cta={`area_${location.id}_domestic`}>Domestic enquiry <span class="arrow" aria-hidden="true"></span></a>
+      <a class="btn btn--ghost" href={href('/contact/?type=project')} data-track="cta_click" data-cta={`area_${location.id}_project`}>Project enquiry</a>
+    </div>
+    <div class="area-aside">
+      <p class="mono area-label">Including</p>
+      <ul role="list" class="nearby">
+        {d.nearby.map((n) => <li>{n}</li>)}
+      </ul>
+      <p class="area-note">Not on the list? <a href={href('/contact/')}>Ask</a> and we will tell you straight away whether we cover your address.</p>
+    </div>
+  </PageHeader>
+
+  <section class="section ground-paper">
+    <div class="wrap area-grid">
+      <article class="prose">
+        <Content />
+      </article>
+      <aside class="area-services" aria-labelledby="area-services-title">
+        <p class="mono area-label" id="area-services-title">Services in {d.town}</p>
+        <ul role="list">
+          {services.map((s) => (
+            <li><a href={href(`/services/${s.id}/`)}><span>{s.data.navTitle}</span><span class="arrow" aria-hidden="true"></span></a></li>
+          ))}
+        </ul>
+        <a class="text-link" href={href('/services/')}><span>All services</span><span class="arrow" aria-hidden="true"></span></a>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section--tight ground-white" aria-labelledby="map-title-local">
+    <div class="wrap map-wrap">
+      <div>
+        <p class="eyebrow">Coverage</p>
+        <h2 class="h2" id="map-title-local">{d.town} and the surrounding area</h2>
+        <p class="lead">{d.town} is one of our three main areas, along with {others.map((o) => o.data.town).join(' and ')}.{secondary.length > 0 && ` From here we also cover ${secondary.map((s) => s.name).join(', ')}.`}</p>
+        <ul role="list" class="other-areas">
+          {others.map((o) => <li><a class="text-link" href={href(`/areas/${o.id}/`)}><span>Electricians in {o.data.town}</span><span class="arrow" aria-hidden="true"></span></a></li>)}
+          <li><a class="text-link" href={href('/areas-we-cover/')}><span>All areas we cover</span><span class="arrow" aria-hidden="true"></span></a></li>
+        </ul>
+      </div>
+      <CoverageMap compact />
+    </div>
+  </section>
+
+  {d.faqs.length > 0 && (
+    <section class="section ground-paper">
+      <div class="wrap"><Faqs items={d.faqs} title={`Electrical work in ${d.town}: questions`} /></div>
+    </section>
+  )}
+
+  {advice.length > 0 && (
+    <section class="section--tight ground-paper advice-links">
+      <div class="wrap">
+        <h2 class="h3">Useful guides</h2>
+        <ul role="list">
+          {advice.map((a) => <li><a class="text-link" href={href(`/advice/${a.id}/`)}><span>{a.data.title}</span><span class="arrow" aria-hidden="true"></span></a></li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <CtaBand context={`area_${location.id}`} title={`Electrical work in ${d.town}? Let’s talk.`} />
+</Base>
+
+<style>
+  .area-aside { border-top: 1px solid var(--rule-dark); padding-top: 18px; }
+  .area-label { color: var(--copper); text-transform: uppercase; letter-spacing: .12em; font-size: .6875rem; margin-bottom: 14px; }
+  .ground-paper .area-label, .ground-white .area-label { color: var(--copper-ink); }
+  .nearby { display: flex; flex-wrap: wrap; gap: 6px; }
+  .nearby li { padding: 5px 10px; border: 1px solid var(--rule-dark); font-size: .875rem; color: var(--on-dark-2); }
+  .area-note { margin-top: 18px; color: var(--on-dark-2); font-size: .9375rem; }
+  .area-note a { color: var(--copper); }
+  .area-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 48px clamp(40px, 7vw, 112px); align-items: start; }
+  .area-services { position: sticky; top: calc(var(--header-h) + 24px); }
+  .area-services ul { border-top: 1px solid var(--rule-strong); margin-bottom: 20px; }
+  .area-services li a { display: flex; justify-content: space-between; align-items: center; padding: 13px 0; border-bottom: 1px solid var(--rule); text-decoration: none; font-weight: 500; }
+  .area-services li a:hover { color: var(--copper-ink); }
+  .map-wrap { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 48px; align-items: center; }
+  .map-wrap .h2 { margin-top: 16px; }
+  .map-wrap .lead { margin-top: 18px; }
+  .other-areas { margin-top: 24px; display: grid; gap: 10px; }
+  .advice-links { padding-top: 0; }
+  .advice-links ul { margin-top: 16px; display: grid; gap: 10px; }
+  @media (max-width: 960px) {
+    .area-grid, .map-wrap { grid-template-columns: 1fr; }
+    .area-services { position: static; }
+  }
+</style>

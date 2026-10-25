@@ -1,0 +1,83 @@
+---
+import { absolute, isProduction, pagePath } from '../lib/site';
+import { company } from '../data/company';
+
+export interface SeoProps {
+  title: string;
+  description: string;
+  /** Site-relative path; defaults to the current page. */
+  canonical?: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  ogImage?: string;
+  /** JSON-LD objects for this page; combined into one @graph with the site-wide entities. */
+  schema?: Record<string, unknown>[];
+}
+
+const { title, description, canonical, noindex = false, ogType = 'website', ogImage = '/og-default.jpg', schema = [] } = Astro.props as SeoProps;
+const site = Astro.site;
+const path = canonical ?? pagePath(Astro.url.pathname);
+const canonicalUrl = absolute(path, site);
+const robots = !isProduction || noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large';
+const imageUrl = absolute(ogImage, site);
+
+const orgId = absolute('/#business', site);
+const siteWide = [
+  {
+    '@type': 'WebSite',
+    '@id': absolute('/#website', site),
+    url: absolute('/', site),
+    name: company.name,
+    inLanguage: 'en-GB',
+    publisher: { '@id': orgId },
+  },
+  {
+    // Electrician is a schema.org LocalBusiness subtype. Address, telephone, opening hours and
+    // ratings are added only once verified in src/data/company.ts.
+    '@type': 'Electrician',
+    '@id': orgId,
+    name: company.name,
+    url: absolute('/', site),
+    description: company.description,
+    logo: absolute('/logo.png', site),
+    image: imageUrl,
+    areaServed: ['Harrogate', 'York', 'Wetherby', 'Knaresborough', 'Ripon', 'Boroughbridge', 'Tadcaster', 'Thirsk'].map((name) => ({ '@type': 'Place', name })),
+    parentOrganization: { '@type': 'Organization', name: company.group.name, url: company.group.url },
+    ...(company.legalName && { legalName: company.legalName }),
+    ...(company.phone && { telephone: company.phone.e164 }),
+    ...(company.email && { email: company.email }),
+    ...(company.address && {
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: company.address.street,
+        addressLocality: company.address.locality,
+        addressRegion: company.address.region,
+        postalCode: company.address.postcode,
+        addressCountry: company.address.country,
+      },
+    }),
+    ...(company.openingHours && {
+      openingHoursSpecification: company.openingHours.map((h) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: h.days, opens: h.opens, closes: h.closes })),
+    }),
+    ...(company.social.length && { sameAs: company.social.map((s) => s.url) }),
+  },
+];
+const jsonLd = { '@context': 'https://schema.org', '@graph': [...siteWide, ...schema] };
+---
+<title>{title}</title>
+<meta name="description" content={description}>
+<link rel="canonical" href={canonicalUrl}>
+<meta name="robots" content={robots}>
+
+<meta property="og:type" content={ogType}>
+<meta property="og:site_name" content={company.name}>
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:url" content={canonicalUrl}>
+<meta property="og:image" content={imageUrl}>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

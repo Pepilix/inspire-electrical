@@ -1,0 +1,84 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Drawing from '../../components/Drawing.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { href } from '../../lib/site';
+import { breadcrumbSchema, webPageSchema } from '../../lib/schema';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const groups = [
+  { id: 'domestic', n: '01', title: 'For homes', intro: 'Work in occupied homes, from a single new socket to a full rewire. Clear quotations, tidy working and the right certificate every time.', cta: 'domestic', items: services.filter((s) => s.data.group === 'domestic') },
+  { id: 'projects', n: '02', title: 'Projects and commercial', intro: 'Design and installation for new builds, major renovations and commercial premises, coordinated with the design team and the rest of the build.', cta: 'project', items: services.filter((s) => s.data.group === 'projects') },
+];
+const title = 'Electrical Services in Harrogate, York & Wetherby';
+const description = 'Domestic electrical work, rewiring, consumer units, EICRs, lighting, new builds, electrical design and commercial work across Harrogate, York and Wetherby.';
+const crumbs = [{ label: 'Services', path: '/services/' }];
+---
+<Base title={title} description={description} schema={[webPageSchema('/services/', title, description, Astro.site), breadcrumbSchema(crumbs, Astro.site)]}>
+  <PageHeader eyebrow="Services" title="Everything electrical, done properly." lead="Twelve services in two groups: work for homeowners, and design and installation for projects and commercial clients." crumbs={crumbs}>
+    <div class="jump">
+      {groups.map((g) => <a href={`#${g.id}`}><span class="mono">{g.n}</span><span>{g.title}</span><span class="arrow" aria-hidden="true"></span></a>)}
+    </div>
+  </PageHeader>
+
+  {groups.map((g, gi) => (
+    <section class:list={['section', gi % 2 ? 'ground-white' : 'ground-paper']} id={g.id} aria-labelledby={`${g.id}-title`}>
+      <div class="wrap">
+        <div class="group-head">
+          <p class="eyebrow">{g.n} · Services</p>
+          <h2 class="h2" id={`${g.id}-title`}>{g.title}</h2>
+          <p class="lead">{g.intro}</p>
+        </div>
+        <ol role="list" class="svc-list">
+          {g.items.map((s) => (
+            <li class="svc-row" data-reveal>
+              <a href={href(`/services/${s.id}/`)}>
+                <span class="svc-n mono">{String(s.data.order).padStart(2, '0')}</span>
+                <span class="svc-name">{s.data.navTitle}</span>
+                <span class="svc-sum">{s.data.summary}</span>
+                <span class="svc-thumb" aria-hidden="true"><Drawing kind={s.data.drawing} tone="paper" label={false} /></span>
+                <span class="arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+          ))}
+        </ol>
+        <p class="group-cta"><a class="btn" href={href(`/contact/?type=${g.cta}`)} data-track="cta_click" data-cta={`services_${g.id}`}>{g.cta === 'domestic' ? 'Domestic enquiry' : 'Project enquiry'} <span class="arrow" aria-hidden="true"></span></a></p>
+      </div>
+    </section>
+  ))}
+
+  <CtaBand context="services" />
+</Base>
+
+<style>
+  .jump { display: grid; gap: 0; border-top: 1px solid var(--rule-dark); }
+  .jump a { display: grid; grid-template-columns: 3em 1fr auto; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--rule-dark); text-decoration: none; font-family: var(--serif); font-size: 1.75rem; }
+  .jump .mono { color: var(--copper); font-size: .75rem; }
+  .jump .arrow { color: var(--copper); }
+  .group-head { display: grid; gap: 18px; max-width: 760px; margin-bottom: 48px; }
+  .svc-list { border-top: 1px solid var(--rule-strong); }
+  .svc-row a {
+    position: relative;
+    display: grid; grid-template-columns: 3em minmax(0, 4fr) minmax(0, 5fr) 120px 48px; align-items: center; gap: 24px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+  }
+  .svc-n { color: var(--copper-ink); font-size: .75rem; }
+  .svc-name { font-family: var(--serif); font-size: clamp(1.5rem, 2.4vw, 2.125rem); font-weight: 500; line-height: 1.1; transition: transform .5s var(--ease-out), color .3s; }
+  .svc-sum { color: var(--ink-2); font-size: .9375rem; }
+  .svc-thumb { width: 120px; aspect-ratio: 4 / 3; overflow: hidden; opacity: .55; filter: grayscale(1); transition: opacity .4s, filter .4s; }
+  .svc-row a:hover .svc-name { transform: translateX(8px); color: var(--copper-ink); }
+  .svc-row a:hover .svc-thumb { opacity: 1; filter: none; }
+  .svc-row a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: var(--copper-ink); transform: scaleX(0); transform-origin: left; transition: transform .6s var(--ease-out); }
+  .svc-row a:hover::after { transform: scaleX(1); }
+  .group-cta { margin-top: 40px; }
+  @media (max-width: 860px) {
+    .svc-row a { grid-template-columns: 2.4em 1fr 32px; gap: 6px 12px; }
+    .svc-sum { grid-column: 2; grid-row: 2; }
+    .svc-thumb { display: none; }
+    .svc-row .arrow { grid-column: 3; grid-row: 1; }
+  }
+</style>

@@ -1,0 +1,53 @@
+---
+// Enquiry → consultation → design and quotation → installation → testing and handover.
+// The copper line draws across and each step lights in turn when the section comes into view.
+const steps = [
+  { t: 'Enquiry', d: 'Tell us what you need by phone, email or the enquiry form. Photographs or drawings help.' },
+  { t: 'Consultation', d: 'A conversation, and a visit where the work needs seeing. For projects, a review of the drawings and programme.' },
+  { t: 'Design and quotation', d: 'A written quotation that says what is included. On projects, layouts and circuit design come first.' },
+  { t: 'Installation', d: 'Planned around your home, business or build programme, with tidy working and one point of contact.' },
+  { t: 'Testing and handover', d: 'Every circuit tested, certificates issued, notifiable work registered and records handed over.' },
+];
+---
+<ol class="process" role="list" data-reveal="process">
+  {steps.map((s, i) => (
+    <li class="step" style={`--i:${i}`}>
+      <span class="step-node" aria-hidden="true"></span>
+      <span class="step-n mono">{String(i + 1).padStart(2, '0')}</span>
+      <h3 class="step-title">{s.t}</h3>
+      <p class="step-text">{s.d}</p>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .process { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; padding-top: 36px; }
+  .process::before, .process::after { content: ''; position: absolute; left: 0; right: 0; top: 4px; height: 1px; }
+  .process::before { background: var(--rule-dark); }
+  .process::after { background: var(--copper); transform-origin: left; }
+  .step { position: relative; }
+  .step-node { position: absolute; top: -37px; left: 0; width: 9px; height: 9px; border: 1px solid var(--copper); border-radius: 50%; background: var(--charcoal); transition: background .4s var(--ease); }
+  .step-n { color: var(--copper); font-size: .75rem; }
+  .step-title { margin-top: 10px; font-family: var(--serif); font-weight: 600; font-size: 1.625rem; line-height: 1.1; }
+  .step-text { margin-top: 10px; color: var(--on-dark-2); font-size: .9375rem; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .process[data-reveal] { opacity: 1; transform: none; }
+    :global(.js) .process::after { transform: scaleX(0); transition: transform 1.8s var(--ease-out); }
+    :global(.js) .process.is-in::after { transform: scaleX(1); }
+    :global(.js) .process .step { opacity: 0; transform: translateY(16px); transition: opacity .8s var(--ease), transform .9s var(--ease-out); transition-delay: calc(var(--i) * .22s + .2s); }
+    :global(.js) .process.is-in .step { opacity: 1; transform: none; }
+    :global(.js) .process .step-node { transition-delay: calc(var(--i) * .22s + .3s); }
+  }
+  .process.is-in .step-node, :global(html:not(.js)) .step-node { background: var(--copper); }
+  @media (prefers-reduced-motion: reduce) { .step-node { background: var(--copper); } }
+
+  @media (max-width: 960px) {
+    .process { grid-template-columns: 1fr; gap: 28px; padding-top: 0; padding-left: 36px; }
+    .process::before, .process::after { left: 4px; right: auto; top: 0; bottom: 0; width: 1px; height: auto; }
+    .process::after { transform-origin: top; }
+    :global(.js) .process::after { transform: scaleY(0); }
+    :global(.js) .process.is-in::after { transform: scaleY(1); }
+    .step-node { top: 6px; left: -36px; }
+  }
+</style>

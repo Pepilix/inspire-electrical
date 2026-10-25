@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { href } from '../../lib/site';
+import { breadcrumbSchema, webPageSchema } from '../../lib/schema';
+
+const articles = (await getCollection('advice')).sort((a, b) => +b.data.published - +a.data.published || a.data.title.localeCompare(b.data.title));
+const title = 'Electrical Advice for Homeowners | Inspire Electrical';
+const description = 'Plain-English guides to EICRs, consumer units, Building Regulations, first and second fix, renovations and lighting, written for UK homeowners.';
+const crumbs = [{ label: 'Advice', path: '/advice/' }];
+---
+<Base title={title} description={description} schema={[webPageSchema('/advice/', title, description, Astro.site), breadcrumbSchema(crumbs, Astro.site)]}>
+  <PageHeader eyebrow="Advice" title="Straight answers about electrical work." lead="Practical guides for homeowners, landlords and anyone planning a build or renovation, with sources for anything regulatory." crumbs={crumbs} />
+  <section class="section ground-paper">
+    <div class="wrap">
+      <ol role="list" class="articles">
+        {articles.map((a, i) => (
+          <li data-reveal>
+            <a href={href(`/advice/${a.id}/`)}>
+              <span class="mono a-n">{String(i + 1).padStart(2, '0')}</span>
+              <span class="a-title">{a.data.title}</span>
+              <span class="a-sum">{a.data.summary}</span>
+              <span class="arrow" aria-hidden="true"></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+  <CtaBand context="advice" />
+</Base>
+
+<style>
+  .articles { border-top: 1px solid var(--rule-strong); }
+  .articles a { display: grid; grid-template-columns: 3em minmax(0, 6fr) minmax(0, 5fr) 48px; gap: 24px; align-items: baseline; padding: 26px 0; border-bottom: 1px solid var(--rule); text-decoration: none; }
+  .a-n { color: var(--copper-ink); font-size: .75rem; }
+  .a-title { font-family: var(--serif); font-size: clamp(1.5rem, 2.4vw, 2.125rem); font-weight: 500; line-height: 1.12; transition: color .3s; }
+  .a-sum { color: var(--ink-2); font-size: .9375rem; }
+  .articles a:hover .a-title { color: var(--copper-ink); }
+  @media (max-width: 860px) {
+    .articles a { grid-template-columns: 2.4em 1fr; gap: 8px 12px; }
+    .a-sum { grid-column: 2; }
+    .articles .arrow { display: none; }
+  }
+</style>

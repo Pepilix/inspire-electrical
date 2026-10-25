@@ -1,0 +1,25 @@
+{
+  "name": "inspire-electrical",
+  "version": "1.0.0",
+  "description": "Inspire Electrical website (Astro, static)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "test": "node scripts/qa.mjs"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "astro": "^5.18.2",
+    "typescript": "^5.9.3"
+  },
+  "private": true,
+  "type": "module"
+}

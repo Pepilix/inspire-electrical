@@ -1,0 +1,99 @@
+---
+import { getCollection } from 'astro:content';
+import Logo from './Logo.astro';
+import Verify from './Verify.astro';
+import { company } from '../data/company';
+import { href, showPlaceholders } from '../lib/site';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+const locations = (await getCollection('locations')).sort((a, b) => a.data.order - b.data.order);
+const year = new Date().getFullYear();
+---
+<footer class="site-footer ground-dark">
+  <div class="wrap">
+    <div class="footer-top">
+      <a href={href('/')} class="footer-logo" aria-label={`${company.name}, home`}><Logo /></a>
+      <p class="footer-line">{company.tagline}</p>
+    </div>
+
+    <div class="footer-grid">
+      <nav aria-label="Services">
+        <p class="footer-label mono">Services</p>
+        <ul role="list">
+          {services.map((s) => <li><a href={href(`/services/${s.id}/`)}>{s.data.navTitle}</a></li>)}
+        </ul>
+      </nav>
+      <nav aria-label="Areas">
+        <p class="footer-label mono">Areas</p>
+        <ul role="list">
+          {locations.map((l) => <li><a href={href(`/areas/${l.id}/`)}>Electricians in {l.data.town}</a></li>)}
+          <li><a href={href('/areas-we-cover/')}>All areas we cover</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <p class="footer-label mono">Company</p>
+        <ul role="list">
+          <li><a href={href('/about/')}>About</a></li>
+          <li><a href={href('/projects/')}>Projects</a></li>
+          <li><a href={href('/advice/')}>Advice</a></li>
+          <li><a href={href('/contact/')}>Contact</a></li>
+          <li><a href={href('/privacy/')}>Privacy</a></li>
+        </ul>
+      </nav>
+      <div class="footer-contact">
+        <p class="footer-label mono">Contact</p>
+        <ul role="list">
+          {(company.phone || showPlaceholders) && <li>{company.phone ? <a href={`tel:${company.phone.e164}`} data-track="phone_click">{company.phone.display}</a> : <Verify label="Telephone" />}</li>}
+          {(company.email || showPlaceholders) && <li>{company.email ? <a href={`mailto:${company.email}`} data-track="email_click">{company.email}</a> : <Verify label="Email address" />}</li>}
+          <li><a href={href('/contact/')}>Send an enquiry</a></li>
+        </ul>
+        {company.address ? (
+          <address class="footer-address">
+            {company.address.street}<br>{company.address.locality} {company.address.postcode}
+          </address>
+        ) : <p class="footer-address">Working across Harrogate, York, Wetherby and North Yorkshire.</p>}
+      </div>
+    </div>
+
+    <div class="footer-family">
+      <p class="mono">Part of <a href={company.group.url}>Inspire</a>, designing and installing technology in homes since {company.group.since}</p>
+      <ul role="list">
+        {company.group.siblings.map((s) => <li><a href={s.url}>{s.name}</a></li>)}
+      </ul>
+    </div>
+
+    <div class="footer-base mono">
+      <span>© {year} {company.legalName ?? company.name}{company.companyNumber && `. Registered in England and Wales, no. ${company.companyNumber}`}</span>
+      <span class="footer-verify">
+        {company.competentPersonScheme ? company.competentPersonScheme.name : <Verify label="Competent person scheme" />}
+        {!company.legalName && <Verify label="Company name and number" />}
+      </span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { padding-top: clamp(64px, 8vw, 112px); padding-bottom: 32px; }
+  .footer-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; padding-bottom: 40px; border-bottom: 1px solid var(--rule-dark); }
+  .footer-logo { color: var(--on-dark); font-size: 26px; text-decoration: none; }
+  .footer-line { font-family: var(--serif); font-size: clamp(1.375rem, 2.4vw, 2rem); max-width: 22ch; text-align: right; line-height: 1.15; }
+  .footer-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px; padding-block: 48px; }
+  .footer-label { color: var(--copper); text-transform: uppercase; letter-spacing: .12em; font-size: .7rem; margin-bottom: 14px; }
+  .footer-grid a { display: inline-block; padding: 5px 0; color: var(--on-dark-2); text-decoration: none; font-size: .9375rem; transition: color .2s; }
+  .footer-grid a:hover { color: var(--on-dark); }
+  .footer-contact li { padding: 3px 0; }
+  .footer-address { margin-top: 16px; color: var(--on-dark-2); font-size: .9375rem; }
+  .footer-family { display: flex; justify-content: space-between; gap: 16px 32px; flex-wrap: wrap; padding-block: 24px; border-top: 1px solid var(--rule-dark); color: var(--on-dark-2); }
+  .footer-family ul { display: flex; gap: 24px; flex-wrap: wrap; }
+  .footer-family a { color: var(--on-dark); text-underline-offset: 3px; }
+  .footer-base { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid var(--rule-dark); color: var(--on-dark-2); font-size: .75rem; }
+  .footer-verify { display: flex; gap: 8px; flex-wrap: wrap; }
+  @media (max-width: 900px) {
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .footer-line { text-align: left; }
+  }
+  @media (max-width: 520px) {
+    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+    .site-footer { padding-bottom: 104px; }
+  }
+</style>

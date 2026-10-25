@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { href } from '../lib/site';
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order).slice(0, 6);
+---
+<Base title="Page not found | Inspire Electrical" description="The page you were looking for could not be found. Try our services, areas we cover, or get in touch with Inspire Electrical." noindex canonical="/404/">
+  <section class="section ground-dark nf">
+    <div class="wrap nf-grid">
+      <div>
+        <p class="eyebrow">Error 404 · Open circuit</p>
+        <h1 class="h1 nf-title">This page is not connected.</h1>
+        <p class="lead">The link may be out of date, or the address mistyped. These should get you back on track.</p>
+        <div class="nf-actions">
+          <a class="btn" href={href('/')}>Homepage</a>
+          <a class="btn btn--ghost" href={href('/contact/')}>Contact us</a>
+        </div>
+      </div>
+      <nav aria-label="Popular pages">
+        <p class="mono nf-label">Popular pages</p>
+        <ul role="list">
+          {services.map((s) => <li><a href={href(`/services/${s.id}/`)}>{s.data.navTitle}</a></li>)}
+          <li><a href={href('/areas-we-cover/')}>Areas we cover</a></li>
+          <li><a href={href('/advice/')}>Advice</a></li>
+        </ul>
+      </nav>
+    </div>
+  </section>
+</Base>
+<style>
+  .nf { min-height: 72vh; display: grid; align-items: center; }
+  .nf-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 48px; align-items: end; }
+  .nf-title { margin: 20px 0 24px; max-width: 12ch; }
+  .nf-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+  .nf-label { color: var(--copper); text-transform: uppercase; letter-spacing: .12em; font-size: .6875rem; margin-bottom: 12px; }
+  .nf ul { border-top: 1px solid var(--rule-dark); }
+  .nf li a { display: block; padding: 11px 0; border-bottom: 1px solid var(--rule-dark); text-decoration: none; color: var(--on-dark-2); }
+  .nf li a:hover { color: var(--on-dark); }
+  @media (max-width: 860px) { .nf-grid { grid-template-columns: 1fr; } }
+</style>

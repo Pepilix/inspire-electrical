@@ -1,0 +1,125 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import EnquiryForm from '../../components/EnquiryForm.astro';
+import Verify from '../../components/Verify.astro';
+import { company } from '../../data/company';
+import { href, isProduction, formEndpoint, showPlaceholders } from '../../lib/site';
+import { breadcrumbSchema, webPageSchema } from '../../lib/schema';
+
+// Never publish a live site whose enquiry forms go nowhere.
+if (isProduction && !formEndpoint) {
+  throw new Error('PRODUCTION build requires PUBLIC_FORM_ENDPOINT so the enquiry forms work. See docs/deployment.md.');
+}
+
+const title = 'Contact Inspire Electrical | Harrogate, York & Wetherby';
+const description = 'Send a domestic or project enquiry to Inspire Electrical, covering Harrogate, York, Wetherby and North Yorkshire. Photographs and drawings welcome.';
+const crumbs = [{ label: 'Contact', path: '/contact/' }];
+---
+<Base title={title} description={description} schema={[webPageSchema('/contact/', title, description, Astro.site), breadcrumbSchema(crumbs, Astro.site)]}>
+  <PageHeader eyebrow="Contact" title="Planning electrical work? Let’s talk." lead="Choose the form that fits. Both take a couple of minutes, and photographs or drawings help us give you a useful answer first time." crumbs={crumbs} />
+
+  <section class="section ground-paper">
+    <div class="wrap contact-grid">
+      <div class="forms">
+        <div class="switch" role="tablist" aria-label="Enquiry type" data-switch>
+          <button type="button" role="tab" id="tab-domestic" aria-controls="form-domestic" aria-selected="true" data-type="domestic">
+            <span class="mono">For your home</span><span class="sw-title">Domestic enquiry</span>
+          </button>
+          <button type="button" role="tab" id="tab-project" aria-controls="form-project" aria-selected="false" tabindex="-1" data-type="project">
+            <span class="mono">Builds, renovations, commercial</span><span class="sw-title">Project enquiry</span>
+          </button>
+        </div>
+        <div id="form-domestic" role="tabpanel" aria-labelledby="tab-domestic" class="panel" data-panel="domestic">
+          <h2 class="h3 nojs-title">Domestic enquiry</h2>
+          <EnquiryForm kind="domestic" />
+        </div>
+        <div id="form-project" role="tabpanel" aria-labelledby="tab-project" class="panel" data-panel="project">
+          <h2 class="h3 nojs-title">Project enquiry</h2>
+          <EnquiryForm kind="project" />
+        </div>
+      </div>
+
+      <aside class="direct" aria-label="Other ways to get in touch">
+        {(company.phone || showPlaceholders) && (
+          <div class="direct-block">
+            <p class="mono label">Call</p>
+            {company.phone ? <a class="big" href={`tel:${company.phone.e164}`} data-track="phone_click">{company.phone.display}</a> : <Verify label="Telephone number" block />}
+            {company.openingHours ? <p class="small">{company.openingHours.map((h) => `${h.days} ${h.opens}–${h.closes}`).join(', ')}</p> : <Verify label="Office hours" block />}
+          </div>
+        )}
+        {(company.email || showPlaceholders) && (
+          <div class="direct-block">
+            <p class="mono label">Email</p>
+            {company.email ? <a class="big" href={`mailto:${company.email}`} data-track="email_click">{company.email}</a> : <Verify label="Email address" block />}
+          </div>
+        )}
+        <div class="direct-block">
+          <p class="mono label">What happens next</p>
+          <ol role="list" class="next">
+            <li><span class="mono">01</span>We read your enquiry and reply to ask anything we need.</li>
+            <li><span class="mono">02</span>Where the work needs seeing, we arrange a visit.</li>
+            <li><span class="mono">03</span>You receive a written quotation setting out what is included.</li>
+          </ol>
+          <Verify label="Typical reply time" block />
+        </div>
+        <div class="direct-block">
+          <p class="mono label">Where we work</p>
+          <p class="small">Harrogate, York, Wetherby and North Yorkshire. <a href={href('/areas-we-cover/')}>Areas we cover</a></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .contact-grid { display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 56px clamp(40px, 6vw, 96px); align-items: start; }
+  .switch { display: none; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 40px; border: 1px solid var(--rule-strong); }
+  :global(.js) .switch { display: grid; }
+  .switch button { display: grid; gap: 4px; padding: 18px 20px; border: 0; background: none; text-align: left; cursor: pointer; transition: background .3s, color .3s; }
+  .switch button + button { border-left: 1px solid var(--rule-strong); }
+  .switch .mono { font-size: .6875rem; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-3); }
+  .sw-title { font-family: var(--serif); font-size: 1.625rem; line-height: 1.1; }
+  .switch [aria-selected='true'] { background: var(--charcoal); color: var(--on-dark); }
+  .switch [aria-selected='true'] .mono { color: var(--copper); }
+  :global(.js) .nojs-title { display: none; }
+  .nojs-title { margin-bottom: 24px; }
+  :global(html:not(.js)) .panel + .panel { margin-top: 72px; padding-top: 48px; border-top: 1px solid var(--rule-strong); }
+  .direct { position: sticky; top: calc(var(--header-h) + 24px); display: grid; gap: 28px; }
+  .direct-block { padding-top: 16px; border-top: 1px solid var(--rule-strong); display: grid; gap: 8px; justify-items: start; }
+  .label { color: var(--copper-ink); text-transform: uppercase; letter-spacing: .12em; font-size: .6875rem; }
+  .big { font-family: var(--serif); font-size: 1.75rem; text-decoration: none; }
+  .small { font-size: .9375rem; color: var(--ink-2); }
+  .small a { color: var(--copper-ink); }
+  .next { display: grid; gap: 10px; font-size: .9375rem; color: var(--ink-2); }
+  .next li { display: grid; grid-template-columns: 2.2em 1fr; }
+  .next .mono { color: var(--copper-ink); font-size: .75rem; padding-top: 3px; }
+  @media (max-width: 960px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .direct { position: static; }
+  }
+  @media (max-width: 480px) {
+    .sw-title { font-size: 1.3rem; }
+    .switch button { padding: 14px; }
+  }
+</style>
+
+<script>
+  const sw = document.querySelector<HTMLElement>('[data-switch]');
+  if (sw) {
+    const tabs = Array.from(sw.querySelectorAll<HTMLButtonElement>('[role=tab]'));
+    const panels = Array.from(document.querySelectorAll<HTMLElement>('[data-panel]'));
+    const show = (type: string, focus = false) => {
+      tabs.forEach((t) => { const on = t.dataset.type === type; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; if (on && focus) t.focus(); });
+      panels.forEach((p) => { p.hidden = p.dataset.panel !== type; });
+    };
+    const initial = new URLSearchParams(location.search).get('type') === 'project' ? 'project' : 'domestic';
+    show(initial);
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => { show(t.dataset.type!); history.replaceState(null, '', `?type=${t.dataset.type}`); });
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); show(tabs[(i + 1) % 2].dataset.type!, true); }
+      });
+    });
+  }
+</script>

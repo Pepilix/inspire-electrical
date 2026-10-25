@@ -1,0 +1,160 @@
+---
+import { getCollection, getEntries, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Drawing from '../../components/Drawing.astro';
+import Faqs from '../../components/Faqs.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { href, absolute } from '../../lib/site';
+import { breadcrumbSchema, webPageSchema, businessRef } from '../../lib/schema';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map((s) => ({ params: { slug: s.id }, props: { service: s } }));
+}
+
+const { service } = Astro.props;
+const d = service.data;
+const { Content } = await render(service);
+const related = await getEntries(d.related);
+const locations = (await getEntries(d.locations)).sort((a, b) => a.data.order - b.data.order);
+const advice = await getEntries(d.advice);
+const photos = import.meta.glob<{ default: ImageMetadata }>('/src/assets/**/*.{jpg,jpeg,png,webp,avif}');
+const img = d.image && photos[`/src/assets/${d.image}`] ? (await photos[`/src/assets/${d.image}`]()).default : null;
+
+const path = `/services/${service.id}/`;
+const crumbs = [{ label: 'Services', path: '/services/' }, { label: d.navTitle, path }];
+const enquiry = d.group === 'domestic' ? 'domestic' : 'project';
+const schema = [
+  webPageSchema(path, d.seoTitle, d.description, Astro.site),
+  breadcrumbSchema(crumbs, Astro.site),
+  {
+    '@type': 'Service',
+    '@id': `${absolute(path, Astro.site)}#service`,
+    name: d.title,
+    serviceType: d.navTitle,
+    description: d.description,
+    provider: businessRef(Astro.site),
+    areaServed: ['Harrogate', 'York', 'Wetherby', 'North Yorkshire'].map((name) => ({ '@type': 'Place', name })),
+    url: absolute(path, Astro.site),
+  },
+];
+---
+<Base title={d.seoTitle} description={d.description} schema={schema}>
+  <PageHeader eyebrow={d.group === 'domestic' ? 'Services · For homes' : 'Services · Projects and commercial'} title={d.title} lead={d.summary} crumbs={crumbs}>
+    <div class="svc-visual">
+      {img ? <Image src={img} alt={d.imageAlt ?? ''} widths={[480, 800, 1200]} sizes="(max-width: 960px) 100vw, 40vw" /> : <Drawing kind={d.drawing} />}
+    </div>
+    <div slot="actions" class="ph-actions">
+      <a class="btn" href={href(`/contact/?type=${enquiry}&service=${service.id}`)} data-track="cta_click" data-cta="service_header">Ask about {d.navTitle.toLowerCase()} <span class="arrow" aria-hidden="true"></span></a>
+    </div>
+  </PageHeader>
+
+  <section class="section ground-paper">
+    <div class="wrap svc-grid">
+      <article class="prose svc-body">
+        <Content />
+      </article>
+
+      <aside class="svc-aside" aria-label="Service summary">
+        <div class="aside-block">
+          <p class="mono aside-label">Specification</p>
+          <dl class="schedule">
+            <div><dt>For</dt><dd>{d.audience}</dd></div>
+            {d.schedule.map((r) => <div><dt>{r.label}</dt><dd>{r.value}</dd></div>)}
+          </dl>
+        </div>
+        <div class="aside-block aside-cta ground-dark">
+          <p class="mono">Next step</p>
+          <p class="aside-cta-title">Tell us about the job</p>
+          <a class="btn" href={href(`/contact/?type=${enquiry}&service=${service.id}`)} data-track="cta_click" data-cta="service_aside">{enquiry === 'domestic' ? 'Domestic enquiry' : 'Project enquiry'}</a>
+        </div>
+        {locations.length > 0 && (
+          <div class="aside-block">
+            <p class="mono aside-label">Local pages</p>
+            <ul role="list" class="aside-links">
+              {locations.map((l) => <li><a href={href(`/areas/${l.id}/`)}>{d.navTitle} in {l.data.town}</a></li>)}
+            </ul>
+          </div>
+        )}
+      </aside>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="section--tight ground-white related" aria-labelledby="related-title">
+      <div class="wrap">
+        <h2 class="h3" id="related-title">Related services</h2>
+        <ul role="list" class="related-list">
+          {related.map((r) => (
+            <li>
+              <a href={href(`/services/${r.id}/`)}>
+                <span class="mono">{r.data.group === 'domestic' ? 'For homes' : 'Projects'}</span>
+                <span class="related-name">{r.data.navTitle}</span>
+                <span class="related-sum">{r.data.summary}</span>
+                <span class="arrow" aria-hidden="true"></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  {d.faqs.length > 0 && (
+    <section class="section ground-paper">
+      <div class="wrap"><Faqs items={d.faqs} title={`${d.navTitle}: questions`} /></div>
+    </section>
+  )}
+
+  {advice.length > 0 && (
+    <section class="section--tight ground-paper advice-links" aria-labelledby="advice-title">
+      <div class="wrap">
+        <h2 class="h3" id="advice-title">Further reading</h2>
+        <ul role="list">
+          {advice.map((a) => <li><a class="text-link" href={href(`/advice/${a.id}/`)}><span>{a.data.title}</span><span class="arrow" aria-hidden="true"></span></a></li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <CtaBand context="service" />
+</Base>
+
+<style>
+  .svc-visual { aspect-ratio: 4 / 3; overflow: hidden; }
+  .svc-visual :global(img), .svc-visual :global(.drawing) { width: 100%; height: 100%; object-fit: cover; }
+  .svc-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: 48px clamp(40px, 7vw, 112px); align-items: start; }
+  .svc-body { font-size: 1.0625rem; }
+  .svc-body > :global(p:first-child) { font-size: 1.25rem; line-height: 1.55; }
+  .svc-aside { position: sticky; top: calc(var(--header-h) + 24px); display: grid; gap: 20px; }
+  .aside-label { color: var(--copper-ink); text-transform: uppercase; letter-spacing: .12em; font-size: .6875rem; margin-bottom: 12px; }
+  .aside-cta { padding: 24px; display: grid; gap: 10px; }
+  .aside-cta .mono { color: var(--copper); font-size: .6875rem; text-transform: uppercase; letter-spacing: .12em; }
+  .aside-cta-title { font-family: var(--serif); font-size: 1.75rem; line-height: 1.1; margin-bottom: 8px; }
+  .aside-cta .btn { --btn-bg: var(--copper); --btn-fg: var(--charcoal); }
+  .aside-cta .btn::before { background: var(--on-dark); }
+  .aside-links { border-top: 1px solid var(--rule-strong); }
+  .aside-links a { display: block; padding: 10px 0; border-bottom: 1px solid var(--rule); text-decoration: none; font-size: .9375rem; }
+  .aside-links a:hover { color: var(--copper-ink); }
+
+  .related-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 28px; border-top: 1px solid var(--rule-strong); }
+  .related-list a { position: relative; display: grid; gap: 8px; align-content: start; height: 100%; padding: 22px 22px 56px 0; border-bottom: 1px solid var(--rule); text-decoration: none; }
+  .related-list li + li a { padding-left: 22px; border-left: 1px solid var(--rule); }
+  .related-list .mono { color: var(--copper-ink); font-size: .6875rem; text-transform: uppercase; letter-spacing: .1em; }
+  .related-name { font-family: var(--serif); font-size: 1.625rem; font-weight: 600; line-height: 1.1; }
+  .related-sum { color: var(--ink-2); font-size: .9375rem; }
+  .related-list .arrow { position: absolute; bottom: 24px; }
+  .related-list a:hover .related-name { color: var(--copper-ink); }
+
+  .advice-links { padding-top: 0; }
+  .advice-links ul { margin-top: 16px; display: grid; gap: 10px; }
+  .advice-links a { color: var(--ink); }
+
+  @media (max-width: 960px) {
+    .svc-grid { grid-template-columns: 1fr; }
+    .svc-aside { position: static; }
+    .related-list li + li a { padding-left: 0; border-left: 0; }
+  }
+</style>

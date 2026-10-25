@@ -1,0 +1,25 @@
+---
+// INSPIRE wordmark (vector trace of the group logo artwork) with the ELECTRICAL descriptor,
+// following the INSPIRE / AUDIO VISUAL lock-up. Colour follows `currentColor`.
+// The path lives in public/logo-word.svg so it is downloaded once and cached, not repeated in every page.
+import { href } from '../lib/site';
+interface Props { class?: string; descriptor?: boolean }
+const { class: className, descriptor = true } = Astro.props;
+---
+<span class:list={['logo', className]}>
+  <svg class="logo-word" viewBox="0 0 315 58.9" aria-hidden="true" focusable="false"><use href={href('/logo-word.svg#w')} /></svg>
+  {descriptor && <span class="logo-descriptor" aria-hidden="true">Electrical</span>}
+</span>
+
+<style>
+  .logo { display: inline-grid; justify-items: center; gap: .32em; line-height: 1; }
+  .logo-word { display: block; width: auto; height: 1.6em; }
+  .logo-descriptor {
+    font-family: var(--sans);
+    font-size: .52em;
+    font-weight: 500;
+    letter-spacing: .62em;
+    margin-right: -.62em;
+    text-transform: uppercase;
+  }
+</style>

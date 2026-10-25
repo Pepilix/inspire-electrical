@@ -1,0 +1,29 @@
+---
+import { href } from '../lib/site';
+
+export interface Crumb { label: string; path: string }
+interface Props { items: Crumb[]; dark?: boolean }
+const { items, dark = false } = Astro.props;
+const all = [{ label: 'Home', path: '/' }, ...items];
+---
+<nav class:list={['crumbs mono', { 'crumbs--dark': dark }]} aria-label="Breadcrumb">
+  <ol role="list">
+    {all.map((c, i) => (
+      <li>
+        {i < all.length - 1
+          ? <a href={href(c.path)}>{c.label}</a>
+          : <span aria-current="page">{c.label}</span>}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .crumbs { font-size: .75rem; letter-spacing: .04em; color: var(--ink-3); }
+  .crumbs ol { display: flex; flex-wrap: wrap; gap: 6px 0; }
+  .crumbs li + li::before { content: '/'; margin: 0 10px; opacity: .6; }
+  .crumbs a { text-decoration: none; }
+  .crumbs a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+  .crumbs--dark { color: var(--on-dark-2); }
+  .crumbs--dark a:hover { color: var(--on-dark); }
+</style>
