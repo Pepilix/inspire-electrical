@@ -3,7 +3,8 @@
 # Repository variables (Settings → Secrets and variables → Actions → Variables):
 #   SITE_URL     e.g. https://pepilix.github.io   or   https://inspire-electrical.com
 #   BASE_PATH    e.g. /inspire-electrical/        or   /
-#   PRODUCTION   "true" only for the live domain
+#   PRODUCTION   "true" once contact details and the form handler are in place;
+#                until then the site is served on its domain but kept out of search results
 #   PUBLIC_FORM_ENDPOINT, PUBLIC_GTM_ID   (optional until launch)
 name: Deploy
 
@@ -25,8 +26,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      SITE_URL: ${{ vars.SITE_URL || 'https://pepilix.github.io' }}
-      BASE_PATH: ${{ vars.BASE_PATH || '/inspire-electrical/' }}
+      # Served at inspire-electrical.com (custom domain set in Settings > Pages).
+      SITE_URL: ${{ vars.SITE_URL || 'https://inspire-electrical.com' }}
+      BASE_PATH: ${{ vars.BASE_PATH || '/' }}
       PRODUCTION: ${{ vars.PRODUCTION || 'false' }}
       PUBLIC_FORM_ENDPOINT: ${{ vars.PUBLIC_FORM_ENDPOINT }}
       PUBLIC_GTM_ID: ${{ vars.PUBLIC_GTM_ID }}
